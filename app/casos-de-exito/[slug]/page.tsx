@@ -3,6 +3,7 @@ import { getSuccessStoryBySlug } from '@/services/wordpress';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { canonicalForPath } from '@/utils/canonical';
+import { getPublicCaseStudySeoOverride } from '@/utils/public-case-study-overrides';
 import SoyTechnoSectionA from '@/components/soytechno/SoyTechnoSectionA';
 import SoyTechnoSectionB from '@/components/soytechno/SoyTechnoSectionB';
 import SoyTechnoSectionC from '@/components/soytechno/SoyTechnoSectionC';
@@ -15,17 +16,6 @@ import CasoExitoCta from './CasoExitoCta';
 
 
 
-const CASO_SEO_OVERRIDES: Record<string, { title: string; description: string }> = {
-  'jumex-shopify-dtc-ecommerce': {
-    title: 'Jumex Shopify DTC: canal propio para un catálogo grande',
-    description: 'Construimos el canal DTC de Jumex en Shopify. Catálogo grande y pedido propio en jumexus.com, para que la venta no se quede en el marketplace.',
-  },
-  'odwalla-shopify-dtc-ecommerce': {
-    title: 'Odwalla Shopify DTC: de sitio informativo a tienda',
-    description: 'Odwalla tenía web y visitas, no carrito. En Shopify armamos el canal DTC en odwalladrinks.com para que el pedido no se fuera a un tercero.',
-  },
-};
-
 export async function generateMetadata({
   params,
 }: {
@@ -33,7 +23,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const url = canonicalForPath(`/casos-de-exito/${slug}`);
-  const override = CASO_SEO_OVERRIDES[slug];
+  const override = getPublicCaseStudySeoOverride(slug);
   if (override) {
     return {
       title: override.title,

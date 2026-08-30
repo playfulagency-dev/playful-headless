@@ -141,6 +141,16 @@ const PUBLIC_CASE_STUDY_OVERRIDES: Record<string, PublicCaseStudyOverride> = {
   },
 };
 
+export function getPublicCaseStudySeoOverride(slug: string) {
+  const override = PUBLIC_CASE_STUDY_OVERRIDES[slug];
+  if (!override) return undefined;
+
+  return {
+    title: override.title,
+    description: override.summary,
+  };
+}
+
 export function applyPublicCaseStudyOverrides<T extends CaseStudyRecord>(story: T): T {
   const override = story.slug ? PUBLIC_CASE_STUDY_OVERRIDES[story.slug] : undefined;
   if (!override) return story;
