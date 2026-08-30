@@ -1,3 +1,5 @@
+import { applyPublicCaseStudyOverrides } from '@/utils/public-case-study-overrides';
+
 const WORDPRESS_API_URL = 'https://endpoint.playfulagency.com/wp-json';
 
 /** WP REST fields that Next must never serialize into RSC / client props. */
@@ -19,7 +21,6 @@ function stripEndpointHost(value: string): string {
     .replace(/\/\/endpoint\.playfulagency\.com[^\s"'<>]*/gi, '')
     .replace(WP_ENDPOINT_HOST_RE, '');
 }
-
 /**
  * Drop Yoast / _links / guid and any endpoint.playfulagency.com strings
  * before a WP object is passed into a Client Component (RSC payload).
@@ -713,7 +714,7 @@ export async function getSuccessStoryBySlug(slug: string): Promise<SuccessStory 
       story.featured_media_url = story._embedded['wp:featuredmedia'][0].source_url;
       story.featured_media_alt = story._embedded['wp:featuredmedia'][0].alt_text;
     }
-    return story as SuccessStory;
+    return applyPublicCaseStudyOverrides(sanitizeWpPayload(story as SuccessStory));
   } catch (error) {
     console.error('Error en getSuccessStoryBySlug:', error);
     return null;
@@ -747,7 +748,8 @@ export async function getAllCaseStudies(): Promise<any[]> {
     );
     if (!response.ok) throw new Error(`Error al obtener casos de éxito: ${response.status}`);
     const casos = await response.json();
-    return sanitizeWpPayload(casos);
+    const sanitizedCases = sanitizeWpPayload(casos);
+    return sanitizedCases.map(applyPublicCaseStudyOverrides);
   } catch (error) {
     console.error('Error en getAllCaseStudies:', error);
     return [];

@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import TwoColumnCtaSection from "@/components/ui/TwoColumnCtaSection";
 import BlogRelatedPostsSection from "@/components/sections/BlogRelatedPostsSection";
+import { applyPublicCaseStudyOverrides } from "@/utils/public-case-study-overrides";
 
 // Importación dinámica para evitar problemas de hidratación
 const TestimonialsSection = dynamic(() => import("./TestimonialsSection"), {
@@ -117,7 +118,7 @@ export default function CaseStudiesContent() {
         if (!response.ok) {
           throw new Error("Error al cargar los casos de éxito");
         }
-        const data = await response.json();
+        const data = (await response.json()).map(applyPublicCaseStudyOverrides);
 
         const transformedData: CaseStudy[] = data.map((item: any) => {
           const title = item.title?.rendered || "Sin título";

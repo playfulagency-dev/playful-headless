@@ -312,9 +312,9 @@ const NuestrosValoresSection = () => {
 // --- COMPONENTE DE PROPUESTA DE VALOR ---
 const ValuePropositionSection = () => {
   const statistics = [
-    { id: '1', number: '100.000€', description: 'Facturaciones mensuales' },
-    { id: '2', number: '35%', description: 'Aumento en Ingresos mensuales' },
-    { id: '3', number: '0', description: 'Complicaciones y Dolores de Cabeza' },
+    { id: '1', number: 'Shopify', description: 'Implementación y evolución' },
+    { id: '2', number: 'UX/UI', description: 'Flujos y arquitectura' },
+    { id: '3', number: 'Headless', description: 'Integraciones y rendimiento' },
   ];
 
   return (
@@ -327,7 +327,7 @@ const ValuePropositionSection = () => {
             Propuesta de valor de Playful
           </h2>
           <p className="mx-auto [font-family:var(--font-dm-sans),sans-serif] font-medium text-[16px] leading-[24px] text-[#E9D7FF] mb-12 min-[768px]:mb-16">
-            Ayudamos a dueños de comercios electrónicos que facturan más de 100.000€ al mes y están descontentos con su ecommerce actual, debido a la falta de escalabilidad y actualización de sus agencias anteriores. Con nuestra metodología abierta y ágil, les ayudamos a aumentar sus ingresos mensuales en un 35% sin las complicaciones y dolores de cabeza que conlleva un rediseño tradicional.
+            Acompañamos a equipos de ecommerce en el análisis, diseño e implementación de mejoras técnicas: arquitectura de catálogo, experiencia de compra, integraciones, medición y mantenimiento evolutivo. El alcance y los criterios de verificación se definen para cada proyecto.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
             {statistics.map((stat) => (
