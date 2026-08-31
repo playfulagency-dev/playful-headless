@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "clean": "rimraf .next",
-    "test:seo": "node scripts/seo-smoke.mjs"
+    "test:seo": "node scripts/seo-smoke.mjs",
+    "test:public-claims-source": "node --test tests/content/public-case-study-source-audit.test.mjs",
+    "audit:public-claims-source": "node scripts/public-case-study-source-audit.mjs"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
