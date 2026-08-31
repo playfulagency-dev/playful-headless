@@ -319,6 +319,34 @@ test('www smoke bounds canonical and trailing-slash hops with exact query', asyn
   assert.equal(requests.length, 5);
 });
 
+test('www smoke rejects every non-308 apex normalization redirect', async (t) => {
+  for (const status of [301, 302, 303, 307]) {
+    await t.test(`rejects ${status}`, async () => {
+      const fetchImpl = async (input) => {
+        const url = new URL(input);
+        if (url.hostname === 'www.playfulagency.com') {
+          return new Response(null, {
+            status: 308,
+            headers: { Location: `${CANONICAL_ORIGIN}${url.pathname}${url.search}` },
+          });
+        }
+        if (url.pathname === '/blog/') {
+          return new Response(null, {
+            status,
+            headers: { Location: `/blog${url.search}` },
+          });
+        }
+        return new Response('ok', { status: 200 });
+      };
+
+      await assert.rejects(
+        runWwwRedirectSmoke({ fetchImpl }),
+        /apex normalization redirect should return 308/,
+      );
+    });
+  }
+});
+
 test('www smoke aborts a request that exceeds its timeout', async () => {
   let observedSignal;
   const hangingFetch = async (_input, options) => {

@@ -77,7 +77,8 @@ The `www` check is separate and optional because it targets the public domain,
 not a branch Preview. It verifies both `/blog` and `/blog/`, using at most five
 GET requests in total. The canonical path must reach apex in one 308 hop; the
 trailing-slash path may use one additional 308 to normalize the slash. Every hop
-must preserve the repeated and encoded query, remain on apex and avoid loops:
+must preserve the repeated and encoded query, remain on apex and avoid loops;
+301, 302, 303 and 307 fail this normalization gate:
 
 ```sh
 npm run test:seo:www

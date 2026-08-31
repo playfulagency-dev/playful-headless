@@ -348,6 +348,7 @@ export async function runWwwRedirectSmoke({
         return { finalUrl: current, totalHops: 1 + additionalHops };
       }
 
+      assert.equal(response.status, 308, 'apex normalization redirect should return 308');
       assert.ok(additionalHops < maxAdditionalHops, 'www exceeded the allowed redirect hops');
       const location = response.headers.get('location');
       assert.ok(location, 'apex normalization redirect should include a Location header');
