@@ -1,4 +1,5 @@
 import { applyPublicCaseStudyOverrides } from '@/utils/public-case-study-overrides';
+import { wordpressFetchCollection } from './wordpress-request.mjs';
 
 const WORDPRESS_API_URL = 'https://endpoint.playfulagency.com/wp-json';
 
@@ -376,29 +377,20 @@ function rewriteInSitePageHrefs(html: string): string {
 
 /** Página WP (servicios, etc.) con HTML de Elementor para renderizarla en el Next. */
 export async function getPageBySlug(slug: string): Promise<WPPage | null> {
-  try {
-    const response = await fetch(
-      `${WORDPRESS_API_URL}/wp/v2/pages?slug=${encodeURIComponent(slug)}&_fields=id,slug,title,content`,
-      {
-        next: { revalidate: 300 },
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-    if (!response.ok) {
-      throw new Error(`Error al obtener la página ${slug}: ${response.status}`);
-    }
-    const pages = await response.json();
-    if (!pages?.[0]) return null;
-    const page = pages[0];
-    const rawHtml: string = page.content?.rendered || '';
-    const html = rewriteInSitePageHrefs(stripScripts(rawHtml));
-    const title = stripHtml(page.title?.rendered || slug);
-    const stylesheetIds = collectStylesheetIds(html, page.id);
-    return { id: page.id, slug: page.slug, title, html, stylesheetIds };
-  } catch (error) {
-    console.error(`Error en getPageBySlug para ${slug}:`, error);
-    return null;
-  }
+  const { items: pages } = await wordpressFetchCollection<any>(
+    `${WORDPRESS_API_URL}/wp/v2/pages?slug=${encodeURIComponent(slug)}&_fields=id,slug,title,content`,
+    {
+      next: { revalidate: 300 },
+      headers: { 'Content-Type': 'application/json' },
+    },
+  );
+  if (!pages?.[0]) return null;
+  const page = pages[0];
+  const rawHtml: string = page.content?.rendered || '';
+  const html = rewriteInSitePageHrefs(stripScripts(rawHtml));
+  const title = stripHtml(page.title?.rendered || slug);
+  const stylesheetIds = collectStylesheetIds(html, page.id);
+  return { id: page.id, slug: page.slug, title, html, stylesheetIds };
 }
 
 // Interfaz para los ítems del menú
