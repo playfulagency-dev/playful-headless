@@ -190,6 +190,7 @@ test('targeted claims cannot reappear in the scoped frontend sources', async () 
 
 test('approved callsites pass exact copy while routes, actions and media remain unchanged', async () => {
   const home = await readFile(path.join(repositoryRoot, 'app/page.tsx'), 'utf8');
+  const layout = await readFile(path.join(repositoryRoot, 'app/layout.tsx'), 'utf8');
   const about = await readFile(path.join(repositoryRoot, 'app/nosotros/page.tsx'), 'utf8');
   const contact = await readFile(
     path.join(repositoryRoot, 'app/contactar-agencia-de-marketing-digital/ContactPageClient.tsx'),
@@ -233,6 +234,39 @@ test('approved callsites pass exact copy while routes, actions and media remain 
     contact,
     /<TwoColumnCtaSection\s+title=\{publicFrontendCopy\.contact\.cta\.title\}\s+subtitle=\{publicFrontendCopy\.contact\.cta\.subtitle\}\s+ctaTitle=\{publicFrontendCopy\.contact\.cta\.ctaTitle\}\s+\/>/,
   );
+  assert.match(
+    home,
+    /<TwoColumnCtaSection\s+contentBgColor="#B3FFF3"\s+imageUrl="\/images\/imagen-nueva-cta-home\.png"\s+title=\{publicFrontendCopy\.home\.cta\.title\}\s+subtitle=\{publicFrontendCopy\.home\.cta\.subtitle\}\s+ctaTitle=\{publicFrontendCopy\.home\.cta\.ctaTitle\}\s+buttonText="Llena el formulario y hablemos sobre tu web"\s+buttonLink="\/contactar-agencia-de-marketing-digital"\s+\/>/,
+  );
+  assert.match(
+    about,
+    /<TwoColumnCtaSection\s+title=\{publicFrontendCopy\.about\.cta\.title\}\s+subtitle=\{publicFrontendCopy\.about\.cta\.subtitle\}\s+ctaTitle=\{publicFrontendCopy\.about\.cta\.ctaTitle\}\s+\/>/,
+  );
+  assert.match(
+    index,
+    /<TwoColumnCtaSection\s+contentBgColor="#FFEFD1"\s+title=\{publicFrontendCopy\.caseStudiesIndex\.cta\.title\}\s+subtitle=\{publicFrontendCopy\.caseStudiesIndex\.cta\.subtitle\}\s+ctaTitle=\{publicFrontendCopy\.caseStudiesIndex\.cta\.ctaTitle\}\s+\/>/,
+  );
+
+  for (const [surface, source] of [
+    ['Home page metadata', home],
+    ['Root layout metadata', layout],
+  ]) {
+    assert.match(
+      source,
+      /const defaultDescription = publicFrontendCopy\.home\.metadataDescription/,
+      `${surface} must source the approved metadata description`,
+    );
+    assert.equal(
+      source.match(/description: defaultDescription/g)?.length,
+      6,
+      `${surface} must use the approved description for metadata, OG and Twitter in both paths`,
+    );
+    assert.doesNotMatch(
+      source,
+      /yoastData\.yoast_wpseo_(?:metadesc|og_description)/,
+      `${surface} must not allow WordPress to override approved descriptions`,
+    );
+  }
 
   assert.match(home, /href="\/contactar-agencia-de-marketing-digital"/);
   assert.match(home, /src="\.\.\/images\/playful-imagen-banner\.png"/);
