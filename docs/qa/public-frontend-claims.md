@@ -5,7 +5,7 @@
 - Estado: preparado para generar Preview. El único dato pendiente es su origen exacto.
 - Base upstream: `a108e17` (`devplayful/main`).
 - Rama del fork: `codex/public-claims-frontend-v2`.
-- Revisión funcional exacta evaluada: `ae1e361`.
+- Revisión funcional exacta evaluada: `befee92`.
 - Cambios en WordPress o producción: ninguno.
 - PR, merge o despliegue: ninguno.
 
@@ -68,19 +68,21 @@ Se conservaron layout, imágenes, rutas, destinos de CTA, navegación, formulari
 
 ## Evidencia técnica realizada
 
-Evaluada sobre `ae1e361`:
+Evaluada sobre `befee92`:
 
 - `npm run test:public-frontend-copy`: **4/4 pruebas superadas**.
 - `npx tsc --noEmit`: **superado**.
 - `git diff --check origin/main...HEAD`: **superado**.
 - `npm run build` con Node 24: **superado; 122/122 páginas generadas**.
-- La prueba exige la forma exacta de la allowlist, rechaza los claims objetivo, comprueba props exactos en Home/Nosotros/Contacto y conserva rutas, acciones y medios representativos.
-- Revisión independiente inicial: detectó el alcance indirecto de Contacto y atribuciones no acreditadas del equipo; se corrigieron en `59c9d7f` y se blindaron en `ae1e361`.
+- La prueba exige la forma exacta de la allowlist, rechaza los claims objetivo, comprueba los props exactos de carrusel y CTA en Home/Nosotros/Contacto/índice de casos, y conserva rutas, acciones y medios representativos.
+- Home genera `description`, `og:description` y `twitter:description` con el texto técnico allowlisted; el HTML compilado confirma el mismo valor en los tres campos y las pruebas impiden que WordPress recupere prioridad sobre ellos.
+- Primera revisión independiente: detectó el alcance indirecto de Contacto y atribuciones no acreditadas del equipo; se corrigieron en `59c9d7f` y se blindaron en `ae1e361`.
+- Segunda revisión independiente: detectó la prioridad residual de metadescripciones de WordPress y cobertura incompleta de CTA; se corrigieron en `1883d5b` y se blindaron en `befee92`.
 
 Evidencia remota:
 
 - Rama: `https://github.com/playfulagency-dev/playful-headless/tree/codex/public-claims-frontend-v2`
-- Revisión funcional: `https://github.com/playfulagency-dev/playful-headless/commit/ae1e361`
+- Revisión funcional: `https://github.com/playfulagency-dev/playful-headless/commit/befee92`
 
 ## Manifiesto de commits
 
@@ -89,6 +91,9 @@ Evidencia remota:
 3. `ab6fba6` — metadatos técnicos fijos del índice de casos.
 4. `59c9d7f` — alcance explícito en Contacto y descripciones neutrales del equipo.
 5. `ae1e361` — controles por callsite y superficie Contacto.
+6. `c383b68` — paquete QA autocontenido y manifiesto de evidencia.
+7. `1883d5b` — metadescripciones técnicas fijas para Home, OG y Twitter.
+8. `befee92` — controles exactos de metadatos y CTA por callsite.
 
 ## Riesgos conocidos
 
@@ -99,4 +104,4 @@ Evidencia remota:
 
 ## Rollback
 
-No hay migraciones ni cambios de datos. Antes de integrar, basta con no promover o eliminar la rama. Si se integrara, el rollback técnico exacto es volver a desplegar la base `a108e17` o revertir, en este orden, `ae1e361`, `59c9d7f`, `ab6fba6`, `f2c59ae` y `83bff48`. No requiere modificar WordPress.
+No hay migraciones ni cambios de datos. Antes de integrar, basta con no promover o eliminar la rama. Si se integrara, el rollback técnico exacto es volver a desplegar la base `a108e17` o revertir los commits funcionales, en este orden: `befee92`, `1883d5b`, `ae1e361`, `59c9d7f`, `ab6fba6`, `f2c59ae` y `83bff48`. `c383b68` y los commits posteriores que solo actualicen este documento pueden revertirse sin efecto de runtime. No requiere modificar WordPress.
