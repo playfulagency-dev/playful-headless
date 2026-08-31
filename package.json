@@ -9,7 +9,7 @@
     "lint": "next lint",
     "clean": "rimraf .next",
     "test:seo": "node scripts/seo-smoke.mjs",
-    "test:seo:unit": "node --test tests/seo-preflight.test.mjs",
+    "test:seo:unit": "node --test tests/seo-preflight.test.mjs tests/test-blog-metadata.test.mjs",
     "test:seo:www": "node scripts/seo-www-smoke.mjs",
     "test:seo:endpoint": "node scripts/seo-endpoint-probe.mjs"
   },

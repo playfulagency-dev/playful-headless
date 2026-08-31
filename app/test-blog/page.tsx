@@ -6,6 +6,7 @@ const TEST_BLOG_URL = canonicalForPath('/test-blog');
 export const metadata: Metadata = {
   alternates: { canonical: TEST_BLOG_URL },
   openGraph: { url: TEST_BLOG_URL },
+  robots: { index: false, follow: true },
 };
 
 import { getBlogPostBySlug } from '@/services/wordpress';
