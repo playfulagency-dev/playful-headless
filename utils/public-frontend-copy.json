@@ -1,0 +1,89 @@
+{
+  "home": {
+    "metadataDescription": "Playful Agency diseña y desarrolla ecommerce en Shopify y WooCommerce, arquitecturas headless, funcionalidades a medida e integraciones técnicas.",
+    "heroTitle": "Diseño y desarrollo técnico para tu e-commerce",
+    "heroParagraphs": [
+      "Una tienda online reúne arquitectura, catálogo, interfaz, checkout e integraciones. Revisamos cómo están conectadas esas piezas para definir un alcance técnico verificable.",
+      "En Playful Agency diseñamos y desarrollamos ecommerce en Shopify y WooCommerce. También trabajamos con arquitecturas headless, funcionalidades a medida e integraciones entre plataformas."
+    ],
+    "technicalReviewTitle": "Componentes que revisamos en un e-commerce",
+    "technicalReviewIntro": "Arquitectura, interfaz, rendimiento e integraciones forman parte del alcance técnico de una tienda online.",
+    "technicalReviewCards": [
+      {
+        "title": "Arquitectura y navegación:",
+        "description": "Revisamos jerarquía, navegación y componentes de interfaz para documentar cómo se presenta y se recorre el catálogo."
+      },
+      {
+        "title": "Rendimiento técnico:",
+        "description": "Analizamos la carga y el comportamiento de las páginas para identificar cuellos de botella y definir mejoras técnicas comprobables."
+      },
+      {
+        "title": "Flujos y componentes:",
+        "description": "Comprobamos checkout, botones, formularios y vistas móviles para localizar errores funcionales y priorizar su corrección."
+      }
+    ],
+    "solutionsTitle": "Soluciones Playful: desarrollo técnico de e-commerce",
+    "solutionsIntro": "Trabajamos en Shopify y WooCommerce, además de arquitecturas headless, funcionalidades a medida e integraciones con sistemas externos.",
+    "solutionCards": [
+      {
+        "title": "Desarrollo y diseño web a medida:",
+        "description": "Diseñamos y desarrollamos tiendas online con componentes adaptados al catálogo, la identidad visual y los requisitos del proyecto."
+      },
+      {
+        "title": "Experiencia de usuario (UX/UI):",
+        "description": "Definimos navegación, jerarquías, páginas de producto y flujos de compra para distintos dispositivos."
+      },
+      {
+        "title": "SEO técnico:",
+        "description": "Configuramos estructura semántica, metadatos, canonicals, sitemaps y otros requisitos técnicos de rastreo."
+      }
+    ],
+    "cta": {
+      "title": "Revisemos la base técnica de tu e-commerce",
+      "subtitle": "Podemos revisar arquitectura, catálogo, interfaz e integraciones para definir un alcance de trabajo verificable.",
+      "ctaTitle": "Cuéntanos qué necesitas construir o mejorar."
+    }
+  },
+  "about": {
+    "history": "Playful Agency se ha especializado en resolver necesidades técnicas de ecommerce. El trabajo del equipo abarca análisis, diseño, desarrollo e integración de plataformas, con alcance y criterios de verificación definidos para cada proyecto.",
+    "capabilities": "Trabajamos sobre arquitectura, interfaces, componentes, rendimiento técnico y configuración SEO para documentar y corregir necesidades concretas de cada plataforma.",
+    "platforms": "Implementamos ecommerce en Shopify y WooCommerce, además de arquitecturas headless, funcionalidades a medida e integraciones con servicios externos.",
+    "vision": "Queremos consolidar una práctica técnica de ecommerce reconocida por la calidad de sus implementaciones, la documentación del trabajo y la colaboración con los equipos de cada proyecto.",
+    "teamIntro": "El equipo reúne perfiles de diseño, desarrollo y SEO técnico que colaboran según el alcance de cada proyecto.",
+    "teamDescriptions": {
+      "86226": "Coordina la definición técnica de proyectos y la colaboración entre diseño, desarrollo e integraciones.",
+      "86224": "Coordina la operación de los proyectos y la colaboración entre las áreas de diseño y desarrollo.",
+      "86475": "Trabaja en contenidos y tareas de SEO según el alcance definido para cada proyecto.",
+      "86229": "Participa en la implementación de interfaces y componentes web según los requisitos del proyecto.",
+      "86228": "Participa en arquitectura, desarrollo e integraciones técnicas para proyectos web.",
+      "86227": "Participa en la definición de interfaces, flujos y componentes UX/UI.",
+      "default": "Participa en proyectos de Playful Agency según el alcance definido."
+    },
+    "cta": {
+      "title": "Revisemos la base técnica de tu e-commerce",
+      "subtitle": "Podemos revisar arquitectura, catálogo, interfaz e integraciones para definir un alcance de trabajo verificable.",
+      "ctaTitle": "Cuéntanos qué necesitas construir o mejorar."
+    }
+  },
+  "caseStudiesCarousel": {
+    "title": "Proyectos de e-commerce y alcance técnico",
+    "subtitle": "Revisa implementaciones documentadas por plataforma, arquitectura, diseño, funcionalidades e integraciones.",
+    "title2": "Conoce cómo abordamos cada proyecto",
+    "buttonText": "Ver proyectos",
+    "fallbackDescription": "Conoce el alcance técnico documentado de este proyecto de e-commerce."
+  },
+  "caseStudiesIndex": {
+    "title": "Proyectos de e-commerce documentados",
+    "intro": "Cada ficha recoge el alcance técnico visible de un proyecto: plataforma, arquitectura, diseño, funcionalidades e integraciones documentadas.",
+    "sectionTitle": "Qué se implementó en cada proyecto",
+    "sectionDescription": "Consulta las decisiones de diseño y desarrollo, los componentes entregados y la plataforma utilizada en cada caso.",
+    "metadataTitle": "Proyectos de e-commerce | Playful Agency",
+    "metadataDescription": "Consulta proyectos de ecommerce documentados por plataforma, arquitectura, diseño, funcionalidades e integraciones.",
+    "testimonialsIntro": "Aquí reunimos comentarios publicados sobre experiencias de trabajo con Playful Agency.",
+    "cta": {
+      "title": "Revisemos la base técnica de tu e-commerce",
+      "subtitle": "Podemos revisar arquitectura, catálogo, interfaz e integraciones para definir un alcance de trabajo verificable.",
+      "ctaTitle": "Cuéntanos qué necesitas construir o mejorar."
+    }
+  }
+}

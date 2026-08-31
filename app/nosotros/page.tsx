@@ -4,9 +4,14 @@ import Image from 'next/image';
 import TwoColumnCtaSection from '@/components/ui/TwoColumnCtaSection';
 import CarouselResultados from '@/components/CarouselResultados';
 import BlogRelatedPostsSection from '@/components/sections/BlogRelatedPostsSection';
+import publicFrontendCopy from '@/utils/public-frontend-copy.json';
 
 // Constante para clases de contenedor estandarizadas
 const shell = "max-w-[1200px] mx-auto px-4 md:px-6";
+const publicTeamDescriptions: Record<string, string> = publicFrontendCopy.about.teamDescriptions;
+
+const getPublicTeamDescription = (memberId: number) =>
+  publicTeamDescriptions[String(memberId)] ?? publicTeamDescriptions.default;
 
 // --- COMPONENTE DE HISTORIA, MISIÓN Y VISIÓN ---
 const HistorySection = () => {
@@ -38,7 +43,7 @@ const HistorySection = () => {
             </h2>
             <div className="space-y-4">
               <p className="[font-family:var(--font-dm-sans),sans-serif] font-medium text-[16px] leading-[24px] text-[#4A4453]">
-                En Playful Agency, nos dimos cuenta de que muchas empresas no estaban aprovechando al máximo el potencial de herramientas clave como el SEO, los anuncios pagados (Ads) y el desarrollo web, lo que estaba limitando su crecimiento digital. A través de nuestra experiencia y crecimiento, hemos aprendido a implementar soluciones estratégicas en estas áreas, potenciando la presencia online de nuestros clientes y optimizando su rendimiento en los canales digitales.
+                {publicFrontendCopy.about.history}
               </p>
             </div>
           </div>
@@ -61,7 +66,7 @@ const HistorySection = () => {
               />
             </div>
             <p className="[font-family:var(--font-dm-sans),sans-serif] font-medium text-[16px] leading-[24px] text-[#4A4453]">
-              Hemos aplicado este conocimiento para ofrecer servicios completos de SEO, campañas de Ads, y desarrollo web de alta calidad, diseñados para atraer tráfico de calidad, mejorar las tasas de conversión y asegurar que las plataformas digitales de nuestros clientes sean rápidas, seguras y eficientes.
+              {publicFrontendCopy.about.capabilities}
             </p>
           </div>
           
@@ -70,14 +75,14 @@ const HistorySection = () => {
             <div className="relative w-full max-w-[220px] h-[180px] mb-6 mx-auto">
               <Image
                 src="/images/nosotros/generamos-exito-roi.png"
-                alt="Ilustración de crecimiento y optimización"
+                alt="Ilustración de plataformas de ecommerce"
                 width={200}
                 height={180}
                 className="object-contain"
               />
             </div>
             <p className="[font-family:var(--font-dm-sans),sans-serif] font-medium text-[16px] leading-[24px] text-[#4A4453]">
-              Es ayudar a empresas como la tuya a optimizar su presencia digital y alcanzar sus metas comerciales. Si buscas mejorar tu visibilidad en los motores de búsqueda, maximizar el retorno de la inversión en publicidad pagada o construir un sitio web que funcione como una herramienta de ventas eficaz, Playful Agency tiene la experiencia y las soluciones necesarias para ayudarte a crecer.
+              {publicFrontendCopy.about.platforms}
             </p>
           </div>
         </div>
@@ -97,7 +102,7 @@ const MissionVisionSection = () => {
               <div className="relative w-full max-w-[220px] h-[180px] mb-6 mx-auto">
                 <Image
                   src="/images/nosotros/nuestra-mision.png"
-                  alt="Ilustración de crecimiento y optimización"
+                  alt="Ilustración de la misión de Playful Agency"
                   width={200}
                   height={180}
                   className="object-contain"
@@ -114,7 +119,7 @@ const MissionVisionSection = () => {
               <div className="relative w-full max-w-[220px] h-[180px] mb-6 mx-auto">
                 <Image
                   src="/images/nosotros/nuestra-vision.png"
-                  alt="Ilustración de crecimiento y optimización"
+                  alt="Ilustración de la visión de Playful Agency"
                   width={200}
                   height={180}
                   className="object-contain"
@@ -122,7 +127,7 @@ const MissionVisionSection = () => {
               </div>
               <h3 className="[font-family:var(--font-paytone-one),var(--font-montserrat),sans-serif] font-[700] text-[32px] leading-[40px] pt-[20px] text-[#453A53] mb-4">VISIÓN</h3>
               <p className="[font-family:var(--font-dm-sans),sans-serif] font-medium text-[16px] leading-[24px] text-[#4A4453]">
-                En 10 años, Playful será la empresa número 1 en ecommerce en Iberoamérica, habiendo influenciado y desarrollado las marcas más importantes del sector. A través de nuestra innovación y apoyo continuo, habremos ayudado a miles de emprendedores y empresarios a transformar sus negocios digitales, consolidándonos como el motor de crecimiento del ecommerce en la región.
+                {publicFrontendCopy.about.vision}
               </p>
             </div>
         </div>
@@ -165,9 +170,7 @@ const TeamMemberCard = ({ member }: { member: TeamMember }) => {
             </div>
           </div>
         )}
-        {member.acf.descripcion && member.acf.descripcion.trim() !== '' && (
-          <p className="mb-0 flex-grow text-gray-600">{member.acf.descripcion}</p>
-        )}
+        <p className="mb-0 flex-grow text-gray-600">{getPublicTeamDescription(member.id)}</p>
         
       </div>
     </div>
@@ -200,7 +203,7 @@ const EquipoSection = async () => {
         </h2>
         
         <p className="[font-family:var(--font-dm-sans),sans-serif] font-medium text-[16px] leading-[24px] text-[#4A4453] text-center max-w-3xl mx-auto mb-12">
-          Conoce al talentoso equipo detrás de Playful Agency. Nuestros expertos combinan creatividad y experiencia para ofrecerte las mejores soluciones digitales.
+          {publicFrontendCopy.about.teamIntro}
         </p>
         
         {/* Sección de Fundadores */}
@@ -422,7 +425,11 @@ export default async function Nosotros() {
 
       {/* Sección CTA */}
       <section className="w-full my-8 mb-[80px]">
-        <TwoColumnCtaSection />
+        <TwoColumnCtaSection
+          title={publicFrontendCopy.about.cta.title}
+          subtitle={publicFrontendCopy.about.cta.subtitle}
+          ctaTitle={publicFrontendCopy.about.cta.ctaTitle}
+        />
       </section>
     </main>
   );

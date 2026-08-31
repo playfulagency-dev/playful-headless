@@ -9,6 +9,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 import { getHomePageMetadata } from '@/services/wordpress';
 import GoogleTagManager, { GoogleTagManagerNoscript } from '@/components/GoogleTagManager';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
+import publicFrontendCopy from '@/utils/public-frontend-copy.json';
 
 const paytoneOne = Paytone_One({ 
   weight: '400',
@@ -32,7 +33,7 @@ const dmSans = DM_Sans({
 export async function generateMetadata(): Promise<Metadata> {
   // Valores por defecto explícitos (fuente de verdad para OG)
   const defaultTitle = 'Playful Agency - Agencia de E-commerce | Marketing Digital';
-  const defaultDescription = '¿Tu e-commerce está perdiendo dinero sin que lo sepas? En Playful Agency transformamos plataformas mediocres en máquinas de conversión de alto rendimiento.';
+  const defaultDescription = publicFrontendCopy.home.metadataDescription;
   const defaultOgImage = 'https://playfulagency.com/og.jpg';
   
   try {

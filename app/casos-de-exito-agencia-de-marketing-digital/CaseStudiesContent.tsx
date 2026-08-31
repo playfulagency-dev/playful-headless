@@ -6,6 +6,7 @@ import Link from "next/link";
 import TwoColumnCtaSection from "@/components/ui/TwoColumnCtaSection";
 import BlogRelatedPostsSection from "@/components/sections/BlogRelatedPostsSection";
 import { applyPublicCaseStudyOverrides } from "@/utils/public-case-study-overrides";
+import publicFrontendCopy from "@/utils/public-frontend-copy.json";
 
 // Importación dinámica para evitar problemas de hidratación
 const TestimonialsSection = dynamic(() => import("./TestimonialsSection"), {
@@ -240,14 +241,10 @@ export default function CaseStudiesContent() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-8">
           <div>
             <h1 className="text-[50px] lg:text-[57px] font-normal text-white mb-6 leading-tight">
-              Resultados que hablan por sí solos
+              {publicFrontendCopy.caseStudiesIndex.title}
             </h1>
             <p className="text-white text-lg leading-relaxed opacity-90">
-              Detrás de cada proyecto hay una historia de transformación.
-              Nuestro trabajo se centra en identificar los puntos de dolor de tu
-              negocio para luego aplicar la tecnología y la creatividad
-              necesarias para generar resultados que no sólo resuelvan un
-              problema, sino que impulsen tu crecimiento de manera sostenible.
+              {publicFrontendCopy.caseStudiesIndex.intro}
             </p>
           </div>
 
@@ -265,12 +262,10 @@ export default function CaseStudiesContent() {
         {/* Bottom Text Section */}
         <div className="lg:text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-normal text-white mb-6">
-            No confíes solo en nuestra palabra, mira los resultados.
+            {publicFrontendCopy.caseStudiesIndex.sectionTitle}
           </h2>
           <p className="text-white text-lg opacity-90 max-w-4xl mx-auto">
-            Nuestros clientes han logrado resultados impactantes gracias a
-            nuestras estrategias innovadoras y personalizadas. Hemos ayudado a
-            empresas a alcanzar sus metas y a crecer de forma exponencial.
+            {publicFrontendCopy.caseStudiesIndex.sectionDescription}
           </p>
         </div>
 
@@ -383,7 +378,12 @@ export default function CaseStudiesContent() {
 
         {/* Sección de dos columnas */}
         <div className="my-16">
-          <TwoColumnCtaSection contentBgColor="#FFEFD1" />
+          <TwoColumnCtaSection
+            contentBgColor="#FFEFD1"
+            title={publicFrontendCopy.caseStudiesIndex.cta.title}
+            subtitle={publicFrontendCopy.caseStudiesIndex.cta.subtitle}
+            ctaTitle={publicFrontendCopy.caseStudiesIndex.cta.ctaTitle}
+          />
         </div>
       </div>
     </div>

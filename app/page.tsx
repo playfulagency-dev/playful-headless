@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { getHomePageMetadata } from '@/services/wordpress';
 import { canonicalForPath } from '@/utils/canonical';
+import publicFrontendCopy from '@/utils/public-frontend-copy.json';
 
 export async function generateMetadata(): Promise<Metadata> {
   const defaultTitle = 'Playful Agency - Agencia de E-commerce | Marketing Digital';
-  const defaultDescription = '¿Tu e-commerce está perdiendo dinero sin que lo sepas? En Playful Agency transformamos plataformas mediocres en máquinas de conversión de alto rendimiento.';
+  const defaultDescription = publicFrontendCopy.home.metadataDescription;
   const defaultOgImage = 'https://playfulagency.com/og.jpg';
   const url = canonicalForPath('/');
 
@@ -92,19 +93,16 @@ async function HomeContent() {
               <div className="space-y-2">
                 <p className="playful-miga-pan">Playful Agency:</p>
                 <p className="playful-h1">
-                  ¿Tu e-commerce está perdiendo dinero sin que lo sepas?{" "}
+                  {publicFrontendCopy.home.heroTitle}
                 </p>
               </div>
 
               <div className="space-y-4 2 text-purple-800">
                 <p className="playful-contenido-p">
-                Tu sitio web no es solo un escaparate digital; es tu motor de ventas más crucial. Pero si tu web es lenta, confusa o se ve anticuada, no solo estás perdiendo clientes, sino que estás{" "}
-                  <b>dejando dinero sobre la mesa</b>.
+                  {publicFrontendCopy.home.heroParagraphs[0]}
                 </p>
                 <p className="playful-contenido-p">
-                  En <b>Playful Agency</b>, somos una <b>Agencia de E-commerce</b>
-                  que va más allá del diseño. Nos especializamos en transformar plataformas mediocres en
-                  <b> máquinas de conversión de alto rendimiento</b>. No creamos webs bonitas por hacer; desarrollamos tecnología que se traduce en <b>ventas consistentes y crecimiento real</b>.
+                  {publicFrontendCopy.home.heroParagraphs[1]}
                 </p>
               </div>
 
@@ -168,9 +166,12 @@ async function HomeContent() {
 
       <section className="py-12">
         <div className={shell}>
-          <TwoColumnCtaSection 
+          <TwoColumnCtaSection
             contentBgColor="#B3FFF3"
             imageUrl="/images/imagen-nueva-cta-home.png"
+            title={publicFrontendCopy.home.cta.title}
+            subtitle={publicFrontendCopy.home.cta.subtitle}
+            ctaTitle={publicFrontendCopy.home.cta.ctaTitle}
             buttonText="Llena el formulario y hablemos sobre tu web"
             buttonLink="/contactar-agencia-de-marketing-digital"
           />
@@ -184,7 +185,7 @@ export default function Home() {
   return (
     <>
       <h1 className="sr-only">
-        ¿Tu e-commerce está perdiendo dinero sin que lo sepas?{" "}
+        {publicFrontendCopy.home.heroTitle}
       </h1>
       <HomePageContent>
         <HomeContent />

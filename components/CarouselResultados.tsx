@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSliderSettings } from "../hooks/useSliderSettings";
+import publicFrontendCopy from "@/utils/public-frontend-copy.json";
 
 // Importación dinámica del Slider para asegurar que solo se cargue en el cliente
 const Slider = dynamic(() => import("react-slick").then((mod) => mod.default), {
@@ -49,10 +50,10 @@ const cardStyles = `
 
 /**
  * Componente CarouselResultados - Muestra un slider de casos de éxito con diseño responsivo
- * @param {string} [title="Soluciones Playful: Tecnología que se traduce en ventas"] - Título principal del componente
+ * @param {string} [title] - Título principal del componente
  * @param {string} [subtitle] - Subtítulo descriptivo
  * @param {Array<Object>} [cases=[]] - Array de objetos con los casos de éxito
- * @param {string} [buttonText="¡Crece como ellos!"] - Texto del botón principal
+ * @param {string} [buttonText] - Texto del botón principal
  * @param {Function} [onButtonClick] - Función que se ejecuta al hacer clic en el botón
  * @param {string} [className] - Clases CSS adicionales para el contenedor principal
  * @param {string} [backgroundColor="#5724AB"] - Color de fondo en formato hexadecimal
@@ -216,12 +217,12 @@ const CaseStudyCard = ({ caseStudy }: { caseStudy: CaseStudy }) => {
 
 
 const CarouselResultados: React.FC<CarouselResultadosProps> = ({
-  title = "Nuestros Clientes: La Prueba de que Sabemos de E-commerce",
-  subtitle = "Nuestros clientes han logrado resultados impactantes gracias a nuestras estrategias innovadoras y personalizadas. Hemos ayudado a empresas a alcanzar sus metas y a crecer de forma exponencial.",
-  title2 = "¿Quieres ser el próximo?",
+  title = publicFrontendCopy.caseStudiesCarousel.title,
+  subtitle = publicFrontendCopy.caseStudiesCarousel.subtitle,
+  title2 = publicFrontendCopy.caseStudiesCarousel.title2,
   cases = [],
   casosDeExito = [],
-  buttonText = "¡Crece como ellos!",
+  buttonText = publicFrontendCopy.caseStudiesCarousel.buttonText,
   onButtonClick,
   className = "",
   backgroundColor = "#5724AB",
@@ -291,7 +292,7 @@ const CarouselResultados: React.FC<CarouselResultadosProps> = ({
           
           // Si aún no hay descripción, usar una por defecto
           if (!description) {
-            description = 'Descubre cómo este proyecto transformó los resultados de nuestro cliente con estrategias innovadoras y soluciones personalizadas.';
+            description = publicFrontendCopy.caseStudiesCarousel.fallbackDescription;
           }
 
           // Extraer imagen destacada

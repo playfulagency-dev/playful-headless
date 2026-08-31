@@ -1,27 +1,18 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import publicFrontendCopy from "@/utils/public-frontend-copy.json";
 
-const cardData = [
-  {
-    icon: "/images/desarrollo-web-a-medida.png",
-    title: "Desarrollo y diseño web a medida:",
-    description:
-      "Creamos tiendas online optimizadas, ultrarrápidas y visualmente impactantes que capturan la atención y convierten visitantes en clientes leales.",
-  },
-  {
-    icon: "/images/optimizacion-experiencia-usuario.png",
-    title: "Optimización de la experiencia de usuario (UX/UI):",
-    description:
-      "Diseñamos flujos de compra tan intuitivos y atractivos que el proceso de pago se siente natural e inevitable.",
-  },
-  {
-    icon: "/images/seo-integrado.png",
-    title: "SEO integrado:",
-    description:
-      "No solo construimos tu plataforma; la optimizamos desde el código fuente. Nos aseguramos de que tu sitio no solo funcione de maravilla, sino que sea altamente visible para los motores de búsqueda, atrayendo tráfico cualificado sin depender solo de la publicidad.",
-  },
+const cardIcons = [
+  "/images/desarrollo-web-a-medida.png",
+  "/images/optimizacion-experiencia-usuario.png",
+  "/images/seo-integrado.png",
 ];
+
+const cardData = publicFrontendCopy.home.solutionCards.map((card, index) => ({
+  ...card,
+  icon: cardIcons[index],
+}));
 
 export default function SolucionesPlayful({
   className,
@@ -32,10 +23,10 @@ export default function SolucionesPlayful({
     <section className={`${className} pb-[1rem]`}>
       <div className="playful-contenedor playful-contenedor-B3FFF3 ">
         <h2 className="playful-h2 max-w-3xl mx-auto">
-        Soluciones Playful: Tecnología de E-commerce para Escalar
+          {publicFrontendCopy.home.solutionsTitle}
         </h2>
         <p className="playful-contenido-p max-w-3xl mx-auto">
-        Somos la <b>Agencia de E-commerce </b>que necesitas para dejar de remendar y empezar a dominar. Somos tus socios tecnológicos, dedicados a construir la base digital que tu negocio requiere para competir y crecer.
+          {publicFrontendCopy.home.solutionsIntro}
         </p>
 
         {/* Grid de 3 tarjetas */}

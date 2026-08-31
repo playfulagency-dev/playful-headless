@@ -1,27 +1,18 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import publicFrontendCopy from "@/utils/public-frontend-copy.json";
 
-const cardData = [
-  {
-    icon: "/images/diseno-confuso-obsoleto.png",
-    title: "Diseño obsoleto o confuso:",
-    description:
-      "Un sitio web que se ve viejo o es difícil de navegar genera desconfianza. En el mundo del e-commerce, una mala impresión equivale a un cliente que se va para no volver.",
-  },
-  {
-    icon: "/images/velocidad-carga-lenta.png",
-    title: "Velocidad de carga lenta:",
-    description:
-      "Cada segundo que tu web tarda en cargar es una oportunidad de venta perdida. Un sitio lento frustra y reduce la confianza, afectando directamente tu tasa de conversión.",
-  },
-  {
-    icon: "/images/errores-tecnicos-bugs.png",
-    title: "Errores técnicos y bugs:",
-    description:
-      "Un checkout que falla, botones que no funcionan o problemas de visualización móvil hacen que tus clientes abandonen el carrito y que nunca más regresen.",
-  },
+const cardIcons = [
+  "/images/diseno-confuso-obsoleto.png",
+  "/images/velocidad-carga-lenta.png",
+  "/images/errores-tecnicos-bugs.png",
 ];
+
+const cardData = publicFrontendCopy.home.technicalReviewCards.map((card, index) => ({
+  ...card,
+  icon: cardIcons[index],
+}));
 
 export default function MaterialServicesSection({
   className,
@@ -32,10 +23,10 @@ export default function MaterialServicesSection({
     <section className={className}>
       <div className="playful-contenedor playful-contenedor-FFEFD1">
         <h2 className="playful-h2 max-w-3xl mx-auto">
-        Lo que realmente está matando tus conversiones online
+          {publicFrontendCopy.home.technicalReviewTitle}
         </h2>
         <p className="playful-contenido-p max-w-3xl mx-auto">
-        El problema rara vez es tu producto. Es la <b>mala experiencia de usuario </b>la que ahuyenta a tus compradores.
+          {publicFrontendCopy.home.technicalReviewIntro}
         </p>
 
         {/* Grid de 3 tarjetas */}

@@ -6,6 +6,7 @@ import { Pagination, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import Image from "next/image";
+import publicFrontendCopy from "@/utils/public-frontend-copy.json";
 
 const testimonials = [
   {
@@ -135,9 +136,7 @@ export default function TestimonialsSection({
             Lo que nuestros clientes dicen
           </h2>
           <p className="text-lg mb-12 max-w-3xl mx-auto" style={textStyle}>
-            Aquí, la voz la tienen ellos. Las historias de nuestros clientes no solo son nuestra mejor carta
-            de presentación, sino también el reflejo de un trabajo enfocado en resultados reales que
-            potencian negocios.
+            {publicFrontendCopy.caseStudiesIndex.testimonialsIntro}
           </p>
         </div>
 
