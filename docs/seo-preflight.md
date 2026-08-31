@@ -28,19 +28,29 @@ The fixed inventory in `scripts/seo-preflight-config.mjs` contains exactly:
   index and one episode.
 
 For every alias the live smoke checks the plain path and a trailing-slash variant
-with repeated and encoded attribution parameters. It requires the exact 301/308
-status, exact destination, byte-equivalent query serialization and a same-origin
-redirect. It also resolves each of the 20 unique destinations once, sequentially,
-with a five-hop ceiling and loop detection.
+with repeated and encoded attribution parameters. The plain path must use its
+exact configured 301/308. A trailing variant may resolve directly or first use a
+308 to remove the slash, but it must reach the exact configured destination in no
+more than two permanent hops. Every hop stays on the tested origin and preserves
+the byte-equivalent query. The fixture models the observed two-hop behavior.
+
+The 20 unique destinations and 12 canonical pages run three times by default,
+sequentially and in fixed inventory order. Each destination retains loop detection
+and a five-hop ceiling. Set `SEO_STABILITY_RUNS` only to an integer from 1 to 5;
+the acceptance default remains 3.
 
 For every canonical page it requires HTTP 200, exactly one canonical and exactly
 one `og:url`, both equal to the query-free, slash-normalized apex URL. Host-leak
 checks apply to SEO identity fields and sitemap entries; WordPress asset URLs are
 not treated as canonical leaks.
 
-The main smoke also confirms that invalid blog paths remain 404, sitemap entries
-are unique and apex-only, and `/test-blog` emits `noindex,follow` while remaining
-available for controlled diagnostics.
+The main smoke also confirms that invalid blog paths remain 404. Every parsed
+sitemap `loc` must use the exact apex origin, omit query and fragment, use a
+normalized path, be unique and exclude `/test-blog`. The diagnostic route must
+emit exactly `noindex,follow`, without a conflicting `index` or `nofollow`.
+
+Every smoke request has an eight-second AbortSignal timeout, including the
+separate `www` and endpoint probes.
 
 ## Commands
 
@@ -56,9 +66,12 @@ Run the full read-only smoke against a Preview URL:
 SEO_BASE_URL=https://exact-preview.example npm run test:seo
 ```
 
-The full smoke performs 80 sequential GET requests: 44 redirect checks, 20
-destination checks, 12 metadata checks, two negative blog checks, sitemap and
-`/test-blog`. Do not parallelize it against the shared WordPress origin.
+With the default three stability runs, the observed two-hop trailing aliases and
+destinations that settle directly on 200, the nominal run performs 166 sequential
+GET requests: 66 alias-chain requests, 60 destination checks, 36 metadata checks,
+two negative blog checks, sitemap and `/test-blog`. A destination redirect may
+add controlled hops before the five-hop ceiling. Do not parallelize the smoke
+against the shared WordPress origin.
 
 The `www` check is separate and optional because it targets the public domain,
 not a branch Preview. It verifies both `/blog` and `/blog/`, using at most five
@@ -94,8 +107,10 @@ Accept the Preview only when all of the following hold:
    variant settles on the canonical path in no more than two 308 hops, with the
    repeated/encoded query intact throughout.
 4. The endpoint probe returns 200 within its eight-second ceiling.
-5. Repeating the representative canonical destinations sequentially does not
-   produce transient 404/5xx responses.
+5. All three deterministic sequential runs for destinations and canonicals avoid
+   transient 404/5xx responses.
+6. A new independent review confirms the two-hop fixtures, timeout behavior,
+   sitemap negatives and robots conflict rejection before Preview approval.
 
 A transient WordPress 5xx or false 404 is a failed stability gate, not permission
 to relax the assertions or remove a legacy hostname.
@@ -118,10 +133,10 @@ to relax the assertions or remove a legacy hostname.
 ## Rollback
 
 No external state is changed by the tests. Before merge, discard the branch or
-Preview. After a future merge, revert only the package commits:
-
-1. Revert the `/test-blog` metadata commit to remove `noindex,follow`.
-2. Revert the preflight commit to remove scripts, fixtures and package commands.
+Preview. After a future merge, revert all commits from this branch in reverse
+order; do not partially retain fixtures that no longer match the smoke behavior.
+The `/test-blog` metadata commit can be reverted independently only when the
+indexing decision itself changes.
 
 Do not roll back PR26 redirects, change DNS, remove hosting roots or alter
 WordPress as part of this rollback.

@@ -11,8 +11,12 @@ import {
 } from '../scripts/seo-preflight-config.mjs';
 import {
   assertAliasInventory,
+  assertNoindexFollow,
+  assertSitemapLocations,
   expectRedirect,
+  expectTrailingAliasRedirect,
   extractSeoMetadata,
+  fetchWithTimeout,
   runEndpointProbe,
   runSeoSmoke,
   runWwwRedirectSmoke,
@@ -30,15 +34,22 @@ function pageMetadata(pathname) {
   ].join('');
 }
 
-function createFixtureFetch() {
+function createFixtureFetch({ requests = [], sitemapLocations = CANONICAL_PATHS, robots = 'noindex, follow' } = {}) {
   const aliasBySource = new Map(ALIASES.map((alias) => [alias.source, alias]));
   const destinations = new Set(ALIASES.map((alias) => alias.destination));
-  return async (input) => {
+  return async (input, options = {}) => {
     const url = new URL(input);
+    requests.push({ href: url.href, signal: options.signal });
     const normalizedPath = url.pathname.length > 1 ? url.pathname.replace(/\/+$/, '') : url.pathname;
     const alias = aliasBySource.get(normalizedPath);
 
     if (alias) {
+      if (url.pathname.endsWith('/')) {
+        return new Response(null, {
+          status: 308,
+          headers: { Location: `${alias.source}${url.search}` },
+        });
+      }
       return new Response(null, {
         status: alias.status,
         headers: { Location: `${alias.destination}${url.search}` },
@@ -46,7 +57,7 @@ function createFixtureFetch() {
     }
 
     if (url.pathname === '/sitemap.xml') {
-      const locations = CANONICAL_PATHS
+      const locations = sitemapLocations
         .map((pathname) => `<loc>${pathname === '/' ? `${CANONICAL_ORIGIN}/` : `${CANONICAL_ORIGIN}${pathname}`}</loc>`)
         .join('');
       return new Response(`<urlset>${locations}</urlset>`, {
@@ -56,7 +67,7 @@ function createFixtureFetch() {
     }
 
     if (url.pathname === TEST_BLOG_PATH) {
-      return new Response('<html><head><meta name="robots" content="noindex, follow"></head></html>', {
+      return new Response(`<html><head><meta name="robots" content="${robots}"></head></html>`, {
         status: 200,
         headers: { 'Content-Type': 'text/html' },
       });
@@ -132,9 +143,153 @@ test('rejects a redirect that drops repeated or encoded attribution', async () =
   );
 });
 
+test('trailing aliases allow one or two permanent hops and require the exact final destination', async () => {
+  const alias = GENERAL_ALIASES[0];
+  const directRequest = async () => new Response(null, {
+    status: alias.status,
+    headers: { Location: `${alias.destination}?utm_content=one&utm_content=two&gclid=a%2Bb` },
+  });
+  const direct = await expectTrailingAliasRedirect({
+    request: directRequest,
+    baseOrigin: baseUrl,
+    alias,
+    pathname: `${alias.source}/?utm_content=one&utm_content=two&gclid=a%2Bb`,
+  });
+  assert.equal(direct.hops, 1);
+
+  let call = 0;
+  const normalizedRequest = async () => {
+    call += 1;
+    return call === 1
+      ? new Response(null, {
+        status: 308,
+        headers: { Location: `${alias.source}?utm_content=one&utm_content=two&gclid=a%2Bb` },
+      })
+      : new Response(null, {
+        status: alias.status,
+        headers: { Location: `${alias.destination}?utm_content=one&utm_content=two&gclid=a%2Bb` },
+      });
+  };
+  const normalized = await expectTrailingAliasRedirect({
+    request: normalizedRequest,
+    baseOrigin: baseUrl,
+    alias,
+    pathname: `${alias.source}/?utm_content=one&utm_content=two&gclid=a%2Bb`,
+  });
+  assert.equal(normalized.hops, 2);
+
+  const wrongDestinationRequest = async () => new Response(null, {
+    status: 308,
+    headers: { Location: `/intermediate?utm_content=one&utm_content=two&gclid=a%2Bb` },
+  });
+  await assert.rejects(
+    expectTrailingAliasRedirect({
+      request: wrongDestinationRequest,
+      baseOrigin: baseUrl,
+      alias,
+      pathname: `${alias.source}/?utm_content=one&utm_content=two&gclid=a%2Bb`,
+    }),
+    /exact alias source/,
+  );
+
+  const queryDroppingRequest = async () => new Response(null, {
+    status: 308,
+    headers: { Location: alias.source },
+  });
+  await assert.rejects(
+    expectTrailingAliasRedirect({
+      request: queryDroppingRequest,
+      baseOrigin: baseUrl,
+      alias,
+      pathname: `${alias.source}/?utm_content=one&utm_content=two&gclid=a%2Bb`,
+    }),
+    /preserve its query on hop 1/,
+  );
+});
+
 test('runs the full redirect, canonical, sitemap and noindex preflight', async () => {
-  const result = await runSeoSmoke({ baseUrl, fetchImpl: createFixtureFetch() });
-  assert.deepEqual(result, { aliases: 22, canonicalPages: 12, destinations: 20 });
+  const requests = [];
+  const result = await runSeoSmoke({ baseUrl, fetchImpl: createFixtureFetch({ requests }) });
+  assert.deepEqual(result, {
+    aliases: 22,
+    canonicalPages: 12,
+    destinations: 20,
+    stabilityRuns: 3,
+  });
+
+  const destinations = [...new Set(ALIASES.map((alias) => alias.destination))];
+  const destinationRequests = requests
+    .map(({ href }) => new URL(href))
+    .filter((url) => destinations.includes(url.pathname) && url.search === '')
+    .map((url) => url.pathname);
+  assert.deepEqual(
+    destinationRequests,
+    Array.from({ length: 3 }, () => destinations).flat(),
+    'destinations should repeat sequentially in fixed inventory order',
+  );
+
+  const canonicalRequests = requests
+    .map(({ href }) => new URL(href))
+    .filter((url) => CANONICAL_PATHS.includes(url.pathname) && url.search === '?utm_source=seo-preflight')
+    .map((url) => url.pathname);
+  assert.deepEqual(
+    canonicalRequests,
+    Array.from({ length: 3 }, () => CANONICAL_PATHS).flat(),
+    'canonicals should repeat sequentially in fixed matrix order',
+  );
+  assert.ok(requests.every(({ signal }) => signal instanceof AbortSignal));
+});
+
+test('sitemap parser enforces exact origin, clean normalized paths and test-blog exclusion', () => {
+  const valid = [
+    '<urlset>',
+    `<url><loc>${CANONICAL_ORIGIN}/</loc></url>`,
+    `<url><loc>${CANONICAL_ORIGIN}/blog</loc></url>`,
+    '</urlset>',
+  ].join('');
+  assert.deepEqual(assertSitemapLocations(valid), [`${CANONICAL_ORIGIN}/`, `${CANONICAL_ORIGIN}/blog`]);
+
+  for (const invalidLocation of [
+    'https://www.playfulagency.com/blog',
+    'https://playfulagency.com.evil.example/blog',
+    'https://playfulagency.com/blog?utm_source=bad',
+    'https://playfulagency.com/blog#fragment',
+    'https://playfulagency.com/blog/',
+    'https://playfulagency.com/blog//post',
+    'https://playfulagency.com:443/blog',
+    'https://playfulagency.com/a/../blog',
+    'https://playfulagency.com/test-blog',
+  ]) {
+    assert.throws(
+      () => assertSitemapLocations(`<urlset><url><loc>${invalidLocation}</loc></url></urlset>`),
+      /sitemap/,
+      invalidLocation,
+    );
+  }
+});
+
+test('robots validation rejects conflicting index and noindex directives', () => {
+  assertNoindexFollow(['noindex, follow']);
+  assert.throws(
+    () => assertNoindexFollow(['index, noindex, follow']),
+    /conflicting index and noindex/,
+  );
+});
+
+test('request timeout provides and aborts an AbortSignal', async () => {
+  let observedSignal;
+  const hangingFetch = async (_input, options) => {
+    observedSignal = options.signal;
+    return new Promise((_resolve, reject) => {
+      options.signal.addEventListener('abort', () => reject(options.signal.reason), { once: true });
+    });
+  };
+  await assert.rejects(
+    fetchWithTimeout('https://preview.example/slow', { fetchImpl: hangingFetch, timeoutMs: 5 }),
+    /timed out after 5ms/,
+  );
+  assert.ok(observedSignal instanceof AbortSignal);
+  assert.equal(observedSignal.aborted, true);
 });
 
 test('www smoke bounds canonical and trailing-slash hops with exact query', async () => {
@@ -164,6 +319,22 @@ test('www smoke bounds canonical and trailing-slash hops with exact query', asyn
   assert.equal(requests.length, 5);
 });
 
+test('www smoke aborts a request that exceeds its timeout', async () => {
+  let observedSignal;
+  const hangingFetch = async (_input, options) => {
+    observedSignal = options.signal;
+    return new Promise((_resolve, reject) => {
+      options.signal.addEventListener('abort', () => reject(options.signal.reason), { once: true });
+    });
+  };
+  await assert.rejects(
+    runWwwRedirectSmoke({ fetchImpl: hangingFetch, timeoutMs: 5 }),
+    /timed out after 5ms/,
+  );
+  assert.ok(observedSignal instanceof AbortSignal);
+  assert.equal(observedSignal.aborted, true);
+});
+
 test('endpoint probe performs one redacted, lightweight collection read', async () => {
   const requests = [];
   const fetchImpl = async (input, options) => {
@@ -183,4 +354,5 @@ test('endpoint probe performs one redacted, lightweight collection read', async 
   assert.equal(requests.length, 1);
   assert.equal(requests[0].options.redirect, 'manual');
   assert.equal(requests[0].options.headers.Accept, 'application/json');
+  assert.ok(requests[0].options.signal instanceof AbortSignal);
 });
