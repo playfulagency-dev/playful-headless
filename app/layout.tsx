@@ -41,11 +41,11 @@ export async function generateMetadata(): Promise<Metadata> {
     
     const metadata: Metadata = {
       title: yoastData.yoast_wpseo_title || defaultTitle,
-      description: yoastData.yoast_wpseo_metadesc || defaultDescription,
+      description: defaultDescription,
       metadataBase: new URL('https://playfulagency.com'),
       openGraph: {
         title: yoastData.yoast_wpseo_og_title || yoastData.yoast_wpseo_title || defaultTitle,
-        description: yoastData.yoast_wpseo_og_description || yoastData.yoast_wpseo_metadesc || defaultDescription,
+        description: defaultDescription,
         type: 'website',
         locale: 'es_ES',
         siteName: 'Playful Agency',
@@ -59,7 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
       twitter: {
         card: 'summary_large_image',
         title: yoastData.yoast_wpseo_og_title || yoastData.yoast_wpseo_title || defaultTitle,
-        description: yoastData.yoast_wpseo_og_description || yoastData.yoast_wpseo_metadesc || defaultDescription,
+        description: defaultDescription,
         images: [defaultOgImage],
       },
     };

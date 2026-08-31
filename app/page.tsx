@@ -13,10 +13,10 @@ export async function generateMetadata(): Promise<Metadata> {
     const yoastData = await getHomePageMetadata();
     return {
       title: yoastData.yoast_wpseo_title || defaultTitle,
-      description: yoastData.yoast_wpseo_metadesc || defaultDescription,
+      description: defaultDescription,
       openGraph: {
         title: yoastData.yoast_wpseo_og_title || yoastData.yoast_wpseo_title || defaultTitle,
-        description: yoastData.yoast_wpseo_og_description || yoastData.yoast_wpseo_metadesc || defaultDescription,
+        description: defaultDescription,
         type: 'website',
         locale: 'es_ES',
         url,
@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
       twitter: {
         card: 'summary_large_image',
         title: yoastData.yoast_wpseo_og_title || yoastData.yoast_wpseo_title || defaultTitle,
-        description: yoastData.yoast_wpseo_og_description || yoastData.yoast_wpseo_metadesc || defaultDescription,
+        description: defaultDescription,
         images: [defaultOgImage],
       },
       alternates: { canonical: url },
