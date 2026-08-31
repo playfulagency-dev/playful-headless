@@ -5,6 +5,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import CarouselResultados from '@/components/CarouselResultados';
 import BlogRelatedPostsSection from '@/components/sections/BlogRelatedPostsSection';
 import TwoColumnCtaSection from '@/components/ui/TwoColumnCtaSection';
+import publicFrontendCopy from '@/utils/public-frontend-copy.json';
 
 interface ContactPageClientProps {
   casosDeExito: any[];
@@ -268,7 +269,13 @@ function ContactForm({ casosDeExito }: ContactPageClientProps) {
       {/* Sección Casos de Éxito - Carrusel */}
       <section className="py-12">
         <div className="max-w-[1200px] mx-auto px-4 md:px-6">
-          <CarouselResultados casosDeExito={casosDeExito} />
+          <CarouselResultados
+            casosDeExito={casosDeExito}
+            title={publicFrontendCopy.caseStudiesCarousel.title}
+            subtitle={publicFrontendCopy.caseStudiesCarousel.subtitle}
+            title2={publicFrontendCopy.caseStudiesCarousel.title2}
+            buttonText={publicFrontendCopy.caseStudiesCarousel.buttonText}
+          />
         </div>
       </section>
 
@@ -277,7 +284,11 @@ function ContactForm({ casosDeExito }: ContactPageClientProps) {
       
       {/* CTA Section */}
       <section className="max-w-[1200px] mx-auto px-4 md:px-6 mt-8 mb-20">
-        <TwoColumnCtaSection />
+        <TwoColumnCtaSection
+          title={publicFrontendCopy.contact.cta.title}
+          subtitle={publicFrontendCopy.contact.cta.subtitle}
+          ctaTitle={publicFrontendCopy.contact.cta.ctaTitle}
+        />
       </section>
     </main>
   );

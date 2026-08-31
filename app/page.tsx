@@ -148,7 +148,13 @@ async function HomeContent() {
 
       <section className="py-12">
         <div className={shell}>
-          <CarouselResultados casosDeExito={casosDeExito} />
+          <CarouselResultados
+            casosDeExito={casosDeExito}
+            title={publicFrontendCopy.caseStudiesCarousel.title}
+            subtitle={publicFrontendCopy.caseStudiesCarousel.subtitle}
+            title2={publicFrontendCopy.caseStudiesCarousel.title2}
+            buttonText={publicFrontendCopy.caseStudiesCarousel.buttonText}
+          />
         </div>
       </section>
 

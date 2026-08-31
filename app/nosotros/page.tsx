@@ -417,7 +417,13 @@ export default async function Nosotros() {
 
       {/* Sección Casos de Éxito - Carrusel */}
       <section className="w-full py-12">
-        <CarouselResultados casosDeExito={casosDeExito} />
+        <CarouselResultados
+          casosDeExito={casosDeExito}
+          title={publicFrontendCopy.caseStudiesCarousel.title}
+          subtitle={publicFrontendCopy.caseStudiesCarousel.subtitle}
+          title2={publicFrontendCopy.caseStudiesCarousel.title2}
+          buttonText={publicFrontendCopy.caseStudiesCarousel.buttonText}
+        />
       </section>
 
       {/* Sección del Blog */} 

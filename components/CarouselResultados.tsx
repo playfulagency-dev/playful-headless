@@ -113,12 +113,12 @@ interface CaseStudy {
 }
 
 interface CarouselResultadosProps {
-  title?: string;
-  title2?: string;
-  subtitle?: string;
+  title: string;
+  title2: string;
+  subtitle: string;
   cases?: CaseStudy[];
   casosDeExito?: any[]; // Datos crudos de la API
-  buttonText?: string;
+  buttonText: string;
   onButtonClick?: () => void;
   className?: string;
   backgroundColor?: string;
@@ -217,12 +217,12 @@ const CaseStudyCard = ({ caseStudy }: { caseStudy: CaseStudy }) => {
 
 
 const CarouselResultados: React.FC<CarouselResultadosProps> = ({
-  title = publicFrontendCopy.caseStudiesCarousel.title,
-  subtitle = publicFrontendCopy.caseStudiesCarousel.subtitle,
-  title2 = publicFrontendCopy.caseStudiesCarousel.title2,
+  title,
+  subtitle,
+  title2,
   cases = [],
   casosDeExito = [],
-  buttonText = publicFrontendCopy.caseStudiesCarousel.buttonText,
+  buttonText,
   onButtonClick,
   className = "",
   backgroundColor = "#5724AB",

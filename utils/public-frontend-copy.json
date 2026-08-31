@@ -51,12 +51,12 @@
     "vision": "Queremos consolidar una práctica técnica de ecommerce reconocida por la calidad de sus implementaciones, la documentación del trabajo y la colaboración con los equipos de cada proyecto.",
     "teamIntro": "El equipo reúne perfiles de diseño, desarrollo y SEO técnico que colaboran según el alcance de cada proyecto.",
     "teamDescriptions": {
-      "86226": "Coordina la definición técnica de proyectos y la colaboración entre diseño, desarrollo e integraciones.",
-      "86224": "Coordina la operación de los proyectos y la colaboración entre las áreas de diseño y desarrollo.",
-      "86475": "Trabaja en contenidos y tareas de SEO según el alcance definido para cada proyecto.",
-      "86229": "Participa en la implementación de interfaces y componentes web según los requisitos del proyecto.",
-      "86228": "Participa en arquitectura, desarrollo e integraciones técnicas para proyectos web.",
-      "86227": "Participa en la definición de interfaces, flujos y componentes UX/UI.",
+      "86226": "Participa en proyectos de Playful Agency según el alcance definido.",
+      "86224": "Participa en proyectos de Playful Agency según el alcance definido.",
+      "86475": "Participa en proyectos de Playful Agency según el alcance definido.",
+      "86229": "Participa en proyectos de Playful Agency según el alcance definido.",
+      "86228": "Participa en proyectos de Playful Agency según el alcance definido.",
+      "86227": "Participa en proyectos de Playful Agency según el alcance definido.",
       "default": "Participa en proyectos de Playful Agency según el alcance definido."
     },
     "cta": {
@@ -80,6 +80,13 @@
     "metadataTitle": "Proyectos de e-commerce | Playful Agency",
     "metadataDescription": "Consulta proyectos de ecommerce documentados por plataforma, arquitectura, diseño, funcionalidades e integraciones.",
     "testimonialsIntro": "Aquí reunimos comentarios publicados sobre experiencias de trabajo con Playful Agency.",
+    "cta": {
+      "title": "Revisemos la base técnica de tu e-commerce",
+      "subtitle": "Podemos revisar arquitectura, catálogo, interfaz e integraciones para definir un alcance de trabajo verificable.",
+      "ctaTitle": "Cuéntanos qué necesitas construir o mejorar."
+    }
+  },
+  "contact": {
     "cta": {
       "title": "Revisemos la base técnica de tu e-commerce",
       "subtitle": "Podemos revisar arquitectura, catálogo, interfaz e integraciones para definir un alcance de trabajo verificable.",
