@@ -14,6 +14,7 @@ const scopedSourceFiles = [
   'components/MaterialServicesSection.tsx',
   'components/SolucionesPlayful.tsx',
   'app/nosotros/page.tsx',
+  'app/contactar-agencia-de-marketing-digital/ContactPageClient.tsx',
   'components/CarouselResultados.tsx',
   'app/casos-de-exito-agencia-de-marketing-digital/CaseStudiesContent.tsx',
   'app/casos-de-exito-agencia-de-marketing-digital/TestimonialsSection.tsx',
@@ -85,6 +86,7 @@ test('the frontend copy allowlist has the exact approved surface shape', () => {
     'about',
     'caseStudiesCarousel',
     'caseStudiesIndex',
+    'contact',
   ]);
 
   assert.deepEqual(Object.keys(publicFrontendCopy.home), [
@@ -137,6 +139,17 @@ test('the frontend copy allowlist has the exact approved surface shape', () => {
     'testimonialsIntro',
     'cta',
   ]);
+  assert.deepEqual(Object.keys(publicFrontendCopy.contact), ['cta']);
+  assert.deepEqual(Object.keys(publicFrontendCopy.contact.cta), [
+    'title',
+    'subtitle',
+    'ctaTitle',
+  ]);
+
+  assert.deepEqual(
+    [...new Set(Object.values(publicFrontendCopy.about.teamDescriptions))],
+    ['Participa en proyectos de Playful Agency según el alcance definido.'],
+  );
 });
 
 test('allowlisted copy describes only the approved technical capabilities', () => {
@@ -175,9 +188,17 @@ test('targeted claims cannot reappear in the scoped frontend sources', async () 
   }
 });
 
-test('routes, CTA actions and media anchors remain unchanged', async () => {
+test('approved callsites pass exact copy while routes, actions and media remain unchanged', async () => {
   const home = await readFile(path.join(repositoryRoot, 'app/page.tsx'), 'utf8');
   const about = await readFile(path.join(repositoryRoot, 'app/nosotros/page.tsx'), 'utf8');
+  const contact = await readFile(
+    path.join(repositoryRoot, 'app/contactar-agencia-de-marketing-digital/ContactPageClient.tsx'),
+    'utf8',
+  );
+  const carousel = await readFile(
+    path.join(repositoryRoot, 'components/CarouselResultados.tsx'),
+    'utf8',
+  );
   const index = await readFile(
     path.join(repositoryRoot, 'app/casos-de-exito-agencia-de-marketing-digital/CaseStudiesContent.tsx'),
     'utf8',
@@ -186,16 +207,39 @@ test('routes, CTA actions and media anchors remain unchanged', async () => {
     path.join(repositoryRoot, 'app/casos-de-exito-agencia-de-marketing-digital/page.tsx'),
     'utf8',
   );
-  const carousel = await readFile(
-    path.join(repositoryRoot, 'components/CarouselResultados.tsx'),
-    'utf8',
+
+  const exactCarouselCall = /<CarouselResultados\s+casosDeExito=\{casosDeExito\}\s+title=\{publicFrontendCopy\.caseStudiesCarousel\.title\}\s+subtitle=\{publicFrontendCopy\.caseStudiesCarousel\.subtitle\}\s+title2=\{publicFrontendCopy\.caseStudiesCarousel\.title2\}\s+buttonText=\{publicFrontendCopy\.caseStudiesCarousel\.buttonText\}\s+\/>/g;
+
+  for (const [surface, source] of [
+    ['Home', home],
+    ['Nosotros', about],
+    ['Contacto', contact],
+  ]) {
+    assert.equal(
+      source.match(exactCarouselCall)?.length,
+      1,
+      `${surface} must pass the exact allowlisted carousel props`,
+    );
+  }
+
+  assert.match(carousel, /title: string;/);
+  assert.match(carousel, /title2: string;/);
+  assert.match(carousel, /subtitle: string;/);
+  assert.match(carousel, /buttonText: string;/);
+  assert.doesNotMatch(carousel, /title\s*=\s*publicFrontendCopy\.caseStudiesCarousel/);
+  assert.doesNotMatch(carousel, /buttonText\s*=\s*publicFrontendCopy\.caseStudiesCarousel/);
+
+  assert.match(
+    contact,
+    /<TwoColumnCtaSection\s+title=\{publicFrontendCopy\.contact\.cta\.title\}\s+subtitle=\{publicFrontendCopy\.contact\.cta\.subtitle\}\s+ctaTitle=\{publicFrontendCopy\.contact\.cta\.ctaTitle\}\s+\/>/,
   );
 
   assert.match(home, /href="\/contactar-agencia-de-marketing-digital"/);
   assert.match(home, /src="\.\.\/images\/playful-imagen-banner\.png"/);
   assert.match(home, /imageUrl="\/images\/imagen-nueva-cta-home\.png"/);
   assert.match(about, /src="\/images\/nosotros-playful-imagen\.png"/);
-  assert.match(about, /<CarouselResultados casosDeExito=\{casosDeExito\}/);
+  assert.match(contact, /type="submit"/);
+  assert.match(contact, /<BlogRelatedPostsSection \/>/);
   assert.match(index, /src="\/images\/casos-de-exito\.png"/);
   assert.match(index, /https:\/\/endpoint\.playfulagency\.com\/wp-json\/wp\/v2\/casos-de-exito\?_embed/);
   assert.match(indexPage, /const title = publicFrontendCopy\.caseStudiesIndex\.metadataTitle/);
