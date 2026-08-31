@@ -1,3 +1,5 @@
+import publicCaseStudyOverridesData from './public-case-study-overrides.json';
+
 type CaseStudyRecord = {
   slug?: string;
   title?: { rendered?: string };
@@ -11,135 +13,8 @@ type PublicCaseStudyOverride = {
   acf: Record<string, unknown>;
 };
 
-const PUBLIC_CASE_STUDY_OVERRIDES: Record<string, PublicCaseStudyOverride> = {
-  'jumex-shopify-dtc-ecommerce': {
-    title: 'JUMEX: implementación de ecommerce en Shopify',
-    summary:
-      'Implementación técnica en Shopify para organizar un catálogo de bebidas mediante colecciones, variantes, páginas de producto y vistas adaptadas a escritorio y móvil.',
-    acf: {
-      h1: 'JUMEX: implementación de ecommerce en Shopify',
-      primerap:
-        'La ficha documenta una implementación en Shopify para organizar el catálogo mediante colecciones, variantes, páginas de producto y vistas adaptadas a escritorio y móvil.',
-      primerh2: 'Alcance técnico del proyecto',
-      segundap:
-        'El trabajo publicado se centra en estructurar un catálogo de bebidas dentro de Shopify y presentar productos, categorías y variantes mediante una navegación de ecommerce.',
-      segundoh2: 'Arquitectura del catálogo',
-      tercerap:
-        'La solución organiza categorías, colecciones y variantes para que el catálogo pueda recorrerse desde distintas rutas de navegación.',
-      cuartap: 'Colecciones y categorías',
-      quintap:
-        'Estructuración del catálogo por categorías y colecciones para agrupar productos y facilitar su descubrimiento.',
-      sextap: 'Páginas de producto',
-      septimap:
-        'Plantillas de producto con galería, información comercial y selección de variantes dentro de Shopify.',
-      octavap: 'Interfaz responsive',
-      novenap:
-        'Adaptación de los componentes principales del catálogo y de producto para pantallas de escritorio y móviles.',
-      tercerh2: 'Implementación técnica en Shopify',
-      decima:
-        'La implementación reúne estructura de catálogo, plantillas de producto, navegación y componentes visuales dentro de Shopify.',
-      otroh2st: 'Configuración de Shopify',
-      otropst:
-        'Configuración de colecciones, variantes y plantillas para presentar el catálogo y habilitar el flujo de compra de la plataforma.',
-      primerah3desarrollo: 'Navegación y descubrimiento',
-      primerapdesarrollo:
-        'Organización de accesos a categorías, colecciones y fichas de producto para recorrer el catálogo desde diferentes puntos de entrada.',
-      segundah3desarrollo: 'Variantes y recursos de producto',
-      segundapdesarrollo:
-        'Configuración de variantes, imágenes y contenido de producto dentro de las plantillas de Shopify.',
-      tercerh3desarrollo: '',
-      tercerapdesarrollo: '',
-      resultadotitulo: 'Componentes técnicos documentados',
-      resultadodescripcion:
-        'La evidencia disponible permite confirmar el alcance funcional mostrado en la tienda y en las capturas del proyecto, sin atribuir métricas comerciales.',
-      resultado1: 'Catálogo estructurado',
-      resultadop1:
-        'Productos agrupados mediante categorías y colecciones para sostener la navegación del ecommerce.',
-      resultado2: 'Plantillas de producto',
-      resultadop2:
-        'Fichas con imágenes, contenido descriptivo y selección de variantes configuradas en Shopify.',
-      resultado3: 'Vistas responsive',
-      resultadop3:
-        'Componentes de catálogo y producto adaptados para su consulta en escritorio y dispositivos móviles.',
-      testimonialnombre: '',
-      testimonialcargo: '',
-      testimonio: '',
-      testimonial_foto: false,
-      mostrar_cta_final: {
-        mostrar_cta: true,
-        titulo_del_cta: '¿Necesitas estructurar un ecommerce con un catálogo amplio?',
-        descripcion:
-          'Podemos revisar la arquitectura del catálogo, las plantillas de producto y las integraciones necesarias para definir un alcance técnico verificable.',
-        titulo2: 'Cada implementación requiere un diagnóstico propio.',
-        parrafo2: 'Conversemos sobre los requisitos funcionales y técnicos de tu tienda.',
-      },
-    },
-  },
-  'odwalla-shopify-dtc-ecommerce': {
-    title: 'ODWALLA: implementación de ecommerce en Shopify',
-    summary:
-      'Implementación técnica en Shopify con colecciones, variantes, páginas de producto, contenido nutricional y vistas adaptadas a escritorio y móvil.',
-    acf: {
-      h1: 'ODWALLA: implementación de ecommerce en Shopify',
-      primerap:
-        'La ficha documenta una tienda Shopify con colecciones, variantes, páginas de producto, contenido nutricional y vistas adaptadas a escritorio y móvil.',
-      primerh2: 'Alcance técnico del proyecto',
-      segundap:
-        'El trabajo publicado comprende la configuración de una experiencia de ecommerce en Shopify para presentar el catálogo y habilitar la navegación entre colecciones y productos.',
-      segundoh2: 'Estructura de catálogo y producto',
-      tercerap:
-        'La solución incorpora navegación por colecciones, fichas de producto y componentes propios del flujo de compra de Shopify.',
-      cuartap: 'Páginas de producto',
-      quintap:
-        'Plantillas con imágenes, descripciones y bloques de información nutricional para cada producto.',
-      sextap: 'Colecciones y variantes',
-      septimap:
-        'Organización del catálogo mediante colecciones y opciones de producto configuradas en Shopify.',
-      octavap: 'Interfaz responsive',
-      novenap:
-        'Adaptación de los componentes de navegación, catálogo y producto para escritorio y dispositivos móviles.',
-      tercerh2: 'Configuración técnica en Shopify',
-      decima:
-        'La implementación reúne estructura de catálogo, plantillas de producto, navegación y componentes visuales dentro de Shopify.',
-      otroh2st: 'Contenido de producto',
-      otropst:
-        'Configuración de páginas de producto con imágenes, descripciones y bloques visuales para la información disponible del catálogo.',
-      primerah3desarrollo: 'Colecciones y variantes',
-      primerapdesarrollo:
-        'Configuración de colecciones y variantes para ordenar productos y permitir la selección de opciones dentro de cada ficha.',
-      segundah3desarrollo: 'Plantillas de producto',
-      segundapdesarrollo:
-        'Estructuración de galerías, descripciones y contenido nutricional en las páginas de producto.',
-      tercerh3desarrollo: 'Navegación responsive',
-      tercerapdesarrollo:
-        'Adaptación de la navegación y de los componentes principales del ecommerce para diferentes tamaños de pantalla.',
-      resultadotitulo: 'Componentes técnicos documentados',
-      resultadodescripcion:
-        'La evidencia disponible permite confirmar el alcance funcional mostrado en la tienda y en las capturas del proyecto, sin atribuir métricas comerciales.',
-      resultado1: 'Páginas de producto',
-      resultadop1:
-        'Fichas con galería, descripción, información nutricional y opciones de producto dentro de Shopify.',
-      resultado2: 'Catálogo por colecciones',
-      resultadop2:
-        'Productos agrupados en colecciones para sostener la navegación y el descubrimiento del catálogo.',
-      resultado3: 'Flujo de compra en Shopify',
-      resultadop3:
-        'Integración de los componentes de catálogo y producto con el flujo de compra proporcionado por la plataforma.',
-      testimonialnombre: '',
-      testimonialcargo: '',
-      testimonio: '',
-      testimonial_foto: false,
-      mostrar_cta_final: {
-        mostrar_cta: true,
-        titulo_del_cta: '¿Necesitas convertir un catálogo en una experiencia de ecommerce?',
-        descripcion:
-          'Podemos revisar colecciones, variantes, plantillas de producto e integraciones para definir un alcance técnico verificable.',
-        titulo2: 'Cada implementación requiere un diagnóstico propio.',
-        parrafo2: 'Conversemos sobre los requisitos funcionales y técnicos de tu tienda.',
-      },
-    },
-  },
-};
+export const PUBLIC_CASE_STUDY_OVERRIDES: Record<string, PublicCaseStudyOverride> =
+  publicCaseStudyOverridesData;
 
 export function getPublicCaseStudySeoOverride(slug: string) {
   const override = PUBLIC_CASE_STUDY_OVERRIDES[slug];
