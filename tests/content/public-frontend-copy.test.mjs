@@ -182,6 +182,10 @@ test('routes, CTA actions and media anchors remain unchanged', async () => {
     path.join(repositoryRoot, 'app/casos-de-exito-agencia-de-marketing-digital/CaseStudiesContent.tsx'),
     'utf8',
   );
+  const indexPage = await readFile(
+    path.join(repositoryRoot, 'app/casos-de-exito-agencia-de-marketing-digital/page.tsx'),
+    'utf8',
+  );
   const carousel = await readFile(
     path.join(repositoryRoot, 'components/CarouselResultados.tsx'),
     'utf8',
@@ -194,5 +198,8 @@ test('routes, CTA actions and media anchors remain unchanged', async () => {
   assert.match(about, /<CarouselResultados casosDeExito=\{casosDeExito\}/);
   assert.match(index, /src="\/images\/casos-de-exito\.png"/);
   assert.match(index, /https:\/\/endpoint\.playfulagency\.com\/wp-json\/wp\/v2\/casos-de-exito\?_embed/);
+  assert.match(indexPage, /const title = publicFrontendCopy\.caseStudiesIndex\.metadataTitle/);
+  assert.match(indexPage, /const description = publicFrontendCopy\.caseStudiesIndex\.metadataDescription/);
+  assert.doesNotMatch(indexPage, /yoast_wpseo_(?:title|metadesc|og_title|og_description)/);
   assert.match(carousel, /href=\{`\/casos-de-exito\/\$\{caseStudy\.slug\}`\}/);
 });

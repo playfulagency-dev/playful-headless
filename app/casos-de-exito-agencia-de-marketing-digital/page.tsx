@@ -14,16 +14,18 @@ export default function CaseStudiesPage() {
 
 export async function generateMetadata() {
   const url = canonicalForPath('/casos-de-exito-agencia-de-marketing-digital');
+  const title = publicFrontendCopy.caseStudiesIndex.metadataTitle;
+  const description = publicFrontendCopy.caseStudiesIndex.metadataDescription;
   try {
     const metadata = await getPageMetadataBySlug('casos-de-exito-agencia-de-marketing-digital');
     
     return {
-      title: metadata.yoast_wpseo_title || publicFrontendCopy.caseStudiesIndex.metadataTitle,
-      description: metadata.yoast_wpseo_metadesc || publicFrontendCopy.caseStudiesIndex.metadataDescription,
+      title,
+      description,
       alternates: { canonical: url },
       openGraph: {
-        title: metadata.yoast_wpseo_og_title || publicFrontendCopy.caseStudiesIndex.metadataTitle,
-        description: metadata.yoast_wpseo_og_description || metadata.yoast_wpseo_metadesc || publicFrontendCopy.caseStudiesIndex.metadataDescription,
+        title,
+        description,
         type: 'website',
         url,
         images: metadata.yoast_wpseo_og_image ? [{
@@ -37,8 +39,8 @@ export async function generateMetadata() {
   } catch (error) {
     console.error('Error al generar metadatos de la página de casos de éxito:', error);
     return {
-      title: publicFrontendCopy.caseStudiesIndex.metadataTitle,
-      description: publicFrontendCopy.caseStudiesIndex.metadataDescription,
+      title,
+      description,
       alternates: { canonical: url },
       openGraph: { url },
     };
