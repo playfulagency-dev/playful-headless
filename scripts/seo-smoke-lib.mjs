@@ -210,22 +210,56 @@ export async function runWwwRedirectSmoke({
   canonicalOrigin = CANONICAL_ORIGIN,
   fetchImpl = fetch,
 } = {}) {
-  const richPath = `/blog/?${ATTRIBUTION_QUERY}`;
-  const source = new URL(richPath, wwwUrl);
-  const response = await fetchImpl(source, { redirect: 'manual' });
-  assert.equal(response.status, 308, 'www should return a permanent 308');
-  const location = response.headers.get('location');
-  assert.ok(location, 'www redirect should include a Location header');
-  const target = new URL(location, source);
-  assert.equal(target.origin, canonicalOrigin, 'www should redirect to the apex origin');
-  assert.equal(target.pathname, source.pathname, 'www should preserve the path');
-  assert.equal(target.search, source.search, 'www should preserve repeated and encoded query parameters');
+  async function firstHop(pathname) {
+    const source = new URL(`${pathname}?${ATTRIBUTION_QUERY}`, wwwUrl);
+    const response = await fetchImpl(source, { redirect: 'manual' });
+    assert.equal(response.status, 308, `${source.pathname} on www should return a permanent 308`);
+    const location = response.headers.get('location');
+    assert.ok(location, 'www redirect should include a Location header');
+    const target = new URL(location, source);
+    assert.equal(target.origin, canonicalOrigin, 'www should redirect to the apex origin');
+    assert.equal(target.pathname, source.pathname, 'www should preserve the path on its first hop');
+    assert.equal(target.search, source.search, 'www should preserve repeated and encoded query parameters');
+    return target;
+  }
 
-  const finalResponse = await fetchImpl(target, { redirect: 'manual' });
-  assert.ok(!REDIRECT_STATUSES.has(finalResponse.status), 'www should reach apex in one hop');
-  assert.equal(finalResponse.status, 200, `www apex destination should return 200, got ${finalResponse.status}`);
+  async function settleOnApex(start, maxAdditionalHops) {
+    const visited = new Set();
+    let current = start;
+    let additionalHops = 0;
 
-  return { status: response.status, destination: `${target.origin}${target.pathname}` };
+    while (true) {
+      assert.ok(!visited.has(current.href), `www redirect loop detected at ${current.href}`);
+      visited.add(current.href);
+      const response = await fetchImpl(current, { redirect: 'manual' });
+      if (!REDIRECT_STATUSES.has(response.status)) {
+        assert.equal(response.status, 200, `www apex destination should return 200, got ${response.status}`);
+        return { finalUrl: current, totalHops: 1 + additionalHops };
+      }
+
+      assert.ok(additionalHops < maxAdditionalHops, 'www exceeded the allowed redirect hops');
+      const location = response.headers.get('location');
+      assert.ok(location, 'apex normalization redirect should include a Location header');
+      const target = new URL(location, current);
+      assert.equal(target.origin, canonicalOrigin, 'www chain should remain on the apex origin');
+      assert.equal(target.search, current.search, 'apex normalization must preserve the query');
+      current = target;
+      additionalHops += 1;
+    }
+  }
+
+  const canonicalTarget = await firstHop('/blog');
+  const canonicalResult = await settleOnApex(canonicalTarget, 0);
+  const trailingTarget = await firstHop('/blog/');
+  const trailingResult = await settleOnApex(trailingTarget, 1);
+  assert.equal(trailingResult.finalUrl.pathname, '/blog', 'trailing slash should normalize to /blog');
+
+  return {
+    status: 308,
+    destination: `${canonicalTarget.origin}${canonicalTarget.pathname}`,
+    canonicalHops: canonicalResult.totalHops,
+    trailingHops: trailingResult.totalHops,
+  };
 }
 
 export async function runEndpointProbe({

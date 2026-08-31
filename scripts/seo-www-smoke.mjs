@@ -5,4 +5,7 @@ const result = await runWwwRedirectSmoke({
   canonicalOrigin: process.env.SEO_CANONICAL_ORIGIN,
 });
 
-console.log(`WWW smoke passed: ${result.status} -> ${result.destination}`);
+console.log(
+  `WWW smoke passed: ${result.status} -> ${result.destination} `
+  + `(canonicalHops=${result.canonicalHops}, trailingHops=${result.trailingHops})`,
+);

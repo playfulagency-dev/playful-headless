@@ -61,8 +61,10 @@ destination checks, 12 metadata checks, two negative blog checks, sitemap and
 `/test-blog`. Do not parallelize it against the shared WordPress origin.
 
 The `www` check is separate and optional because it targets the public domain,
-not a branch Preview. It performs one GET to `www` and one to the resulting apex
-URL:
+not a branch Preview. It verifies both `/blog` and `/blog/`, using at most five
+GET requests in total. The canonical path must reach apex in one 308 hop; the
+trailing-slash path may use one additional 308 to normalize the slash. Every hop
+must preserve the repeated and encoded query, remain on apex and avoid loops:
 
 ```sh
 npm run test:seo:www
@@ -88,8 +90,9 @@ Accept the Preview only when all of the following hold:
 
 1. Unit tests, TypeScript and `git diff --check` pass.
 2. The full smoke passes against the exact Preview URL.
-3. `www` returns one 308 hop to the apex with the exact path and repeated/encoded
-   query intact.
+3. `www` sends the canonical path to apex in one 308, and the trailing-slash
+   variant settles on the canonical path in no more than two 308 hops, with the
+   repeated/encoded query intact throughout.
 4. The endpoint probe returns 200 within its eight-second ceiling.
 5. Repeating the representative canonical destinations sequentially does not
    produce transient 404/5xx responses.

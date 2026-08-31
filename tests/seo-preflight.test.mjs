@@ -137,7 +137,7 @@ test('runs the full redirect, canonical, sitemap and noindex preflight', async (
   assert.deepEqual(result, { aliases: 22, canonicalPages: 12, destinations: 20 });
 });
 
-test('www smoke enforces one 308 hop with exact path and query', async () => {
+test('www smoke bounds canonical and trailing-slash hops with exact query', async () => {
   const requests = [];
   const fetchImpl = async (input) => {
     const url = new URL(input);
@@ -148,12 +148,20 @@ test('www smoke enforces one 308 hop with exact path and query', async () => {
         headers: { Location: `${CANONICAL_ORIGIN}${url.pathname}${url.search}` },
       });
     }
+    if (url.pathname === '/blog/') {
+      return new Response(null, {
+        status: 308,
+        headers: { Location: `/blog${url.search}` },
+      });
+    }
     return new Response('ok', { status: 200 });
   };
 
   const result = await runWwwRedirectSmoke({ fetchImpl });
   assert.equal(result.status, 308);
-  assert.equal(requests.length, 2);
+  assert.equal(result.canonicalHops, 1);
+  assert.equal(result.trailingHops, 2);
+  assert.equal(requests.length, 5);
 });
 
 test('endpoint probe performs one redacted, lightweight collection read', async () => {
