@@ -95,6 +95,7 @@ interface WPCaseStudy {
       source_url: string;
     }>;
   };
+  featured_media_url?: string;
 }
 
 // Interfaz para los casos de estudio transformados
@@ -296,7 +297,9 @@ const CarouselResultados: React.FC<CarouselResultadosProps> = ({
 
           // Extraer imagen destacada
           let image = '';
-          if (item._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
+          if (item.featured_media_url) {
+            image = item.featured_media_url;
+          } else if (item._embedded?.['wp:featuredmedia']?.[0]?.source_url) {
             image = item._embedded['wp:featuredmedia'][0].source_url;
           } else if (item.acf?.imagen_destacada) {
             image = item.acf.imagen_destacada;
