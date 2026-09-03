@@ -10,6 +10,59 @@ export const ATTRIBUTION_FIELDS = [
 
 export type UtmField = (typeof ATTRIBUTION_FIELDS)[number];
 
+export const DECISION_ROLE_OPTIONS = [
+  'owner',
+  'decision_lead',
+  'researching_for_other',
+  'other',
+] as const;
+
+export const SALES_MODEL_OPTIONS = [
+  'd2c',
+  'd2c_b2b',
+  'amazon',
+  'mercado_libre',
+  'marketplaces_other',
+  'marketplace_to_d2c',
+  'pre_d2c',
+  'not_online_or_unsure',
+  'other',
+] as const;
+
+export const MONTHLY_REVENUE_OPTIONS = [
+  'over_100k',
+  '50k_100k',
+  '10k_50k',
+  'under_10k',
+  'prefer_not_to_say',
+  'other',
+] as const;
+
+export const PROJECT_TIMING_OPTIONS = [
+  '0_30_days',
+  '1_3_months',
+  'evaluating',
+  'researching',
+  'other',
+] as const;
+
+export type DecisionRole = (typeof DECISION_ROLE_OPTIONS)[number];
+export type SalesModel = (typeof SALES_MODEL_OPTIONS)[number];
+export type MonthlyRevenue = (typeof MONTHLY_REVENUE_OPTIONS)[number];
+export type ProjectTiming = (typeof PROJECT_TIMING_OPTIONS)[number];
+
+export interface LeadQualification {
+  decisionRole: DecisionRole;
+  decisionRoleOther: string;
+  salesModel: SalesModel;
+  salesModelOther: string;
+  secondaryMarketplaces: string;
+  monthlyRevenue: MonthlyRevenue;
+  monthlyRevenueOther: string;
+  projectTiming: ProjectTiming;
+  projectTimingOther: string;
+}
+
 export interface ContactAttribution {
   source: string;
   landing: string;
@@ -28,6 +81,7 @@ export interface WebsiteLead {
   phone: string;
   business: string;
   message: string;
+  qualification: LeadQualification;
   privacyConsent: true;
   marketingConsent: boolean;
   consentCapturedAt: string;

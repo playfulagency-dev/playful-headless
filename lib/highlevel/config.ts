@@ -20,6 +20,17 @@ const CUSTOM_FIELD_KEYS = [
   'form_id',
   'privacy_consent_at',
   'marketing_consent',
+  'decision_role',
+  'decision_role_other',
+  'sales_model',
+  'sales_model_other',
+  'secondary_marketplaces',
+  'monthly_revenue',
+  'monthly_revenue_other',
+  'project_timing',
+  'project_timing_other',
+  'qualification_level',
+  'project_context',
 ] as const;
 
 export type HighLevelCustomFieldKey = (typeof CUSTOM_FIELD_KEYS)[number];

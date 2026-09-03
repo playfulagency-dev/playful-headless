@@ -60,6 +60,22 @@ test('legacy requests bypass receipts while supplied identifiers fail closed', (
   assert(submissionId.includes("array('status' => 400)"));
 });
 
+test('validates versioned qualification selections before it claims a receipt', () => {
+  const validation = between(
+    gate,
+    'function playful_contact_gate_allowed_qualification_values',
+    'function playful_contact_gate_request_context',
+  );
+  const preDispatch = between(gate, "add_filter('rest_pre_dispatch'", "add_filter('rest_post_dispatch'");
+  assert(validation.includes("'decisionRole'"));
+  assert(validation.includes("'salesModel'"));
+  assert(validation.includes("'monthlyRevenue'"));
+  assert(validation.includes("'projectTiming'"));
+  assert(validation.includes("array('status' => 422)"));
+  assert(preDispatch.indexOf('playful_contact_gate_validate_qualification')
+    < preDispatch.indexOf('playful_contact_gate_claim_submission'));
+});
+
 test('claims atomically using a hash-only, non-autoloaded option', () => {
   const receiptKey = between(
     gate,

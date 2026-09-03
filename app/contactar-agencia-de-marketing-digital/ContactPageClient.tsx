@@ -22,8 +22,19 @@ const EMPTY_FORM = {
   phone: '',
   subject: '',
   business: '',
+  decisionRole: '',
+  decisionRoleOther: '',
+  salesModel: '',
+  salesModelOther: '',
+  secondaryMarketplaces: '',
+  monthlyRevenue: '',
+  monthlyRevenueOther: '',
+  projectTiming: '',
+  projectTimingOther: '',
   message: '',
 };
+
+const MARKETPLACE_MODELS = new Set(['amazon', 'mercado_libre', 'marketplaces_other', 'marketplace_to_d2c']);
 
 // Componente del formulario con reCAPTCHA V2
 function ContactForm({ casosDeExito }: ContactPageClientProps) {
@@ -98,6 +109,15 @@ function ContactForm({ casosDeExito }: ContactPageClientProps) {
           email: formData.email,
           phone: formData.phone,
           business: formData.business,
+          decisionRole: formData.decisionRole,
+          decisionRoleOther: formData.decisionRoleOther,
+          salesModel: formData.salesModel,
+          salesModelOther: formData.salesModelOther,
+          secondaryMarketplaces: formData.secondaryMarketplaces,
+          monthlyRevenue: formData.monthlyRevenue,
+          monthlyRevenueOther: formData.monthlyRevenueOther,
+          projectTiming: formData.projectTiming,
+          projectTimingOther: formData.projectTimingOther,
           message: formData.message,
           submissionId: submissionIdRef.current,
           privacyConsent,
@@ -277,10 +297,166 @@ function ContactForm({ casosDeExito }: ContactPageClientProps) {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 />
               </div>
+
+              <div>
+                <label htmlFor="decisionRole" className="block [font-family:var(--font-dm-sans),sans-serif] font-bold text-[14px] leading-[130%] text-[#453A53] mb-1">
+                  Tu papel en el proyecto <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="decisionRole"
+                  name="decisionRole"
+                  value={formData.decisionRole}
+                  onChange={handleChange}
+                  disabled={isPendingConfirmation || isSubmitting}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  required
+                >
+                  <option value="" disabled>Selecciona una opción</option>
+                  <option value="owner">Soy dueño/a, socio/a o cofundador/a</option>
+                  <option value="decision_lead">Lidero e-commerce, marketing u operaciones y participo en la decisión</option>
+                  <option value="researching_for_other">Estoy investigando para otra persona/equipo</option>
+                  <option value="other">Otro</option>
+                </select>
+                {formData.decisionRole === 'other' && (
+                  <input
+                    type="text"
+                    name="decisionRoleOther"
+                    value={formData.decisionRoleOther}
+                    onChange={handleChange}
+                    disabled={isPendingConfirmation || isSubmitting}
+                    placeholder="Cuéntanos cuál aplica"
+                    className="mt-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    maxLength={250}
+                    required
+                  />
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="salesModel" className="block [font-family:var(--font-dm-sans),sans-serif] font-bold text-[14px] leading-[130%] text-[#453A53] mb-1">
+                  Modelo de venta principal <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="salesModel"
+                  name="salesModel"
+                  value={formData.salesModel}
+                  onChange={handleChange}
+                  disabled={isPendingConfirmation || isSubmitting}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  required
+                >
+                  <option value="" disabled>Selecciona una opción</option>
+                  <option value="d2c">Vendemos principalmente D2C desde nuestra tienda online</option>
+                  <option value="d2c_b2b">Combinamos D2C y B2B</option>
+                  <option value="amazon">Vendemos principalmente en Amazon</option>
+                  <option value="mercado_libre">Vendemos principalmente en Mercado Libre</option>
+                  <option value="marketplaces_other">Vendemos principalmente en otros marketplaces</option>
+                  <option value="marketplace_to_d2c">Vendemos en marketplaces y queremos dar el salto a D2C</option>
+                  <option value="pre_d2c">Estamos preparando nuestra primera venta directa D2C</option>
+                  <option value="not_online_or_unsure">No vendemos online todavía / no estoy seguro</option>
+                  <option value="other">Otro</option>
+                </select>
+                {formData.salesModel === 'other' && (
+                  <input
+                    type="text"
+                    name="salesModelOther"
+                    value={formData.salesModelOther}
+                    onChange={handleChange}
+                    disabled={isPendingConfirmation || isSubmitting}
+                    placeholder="Cuéntanos cuál aplica"
+                    className="mt-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    maxLength={250}
+                    required
+                  />
+                )}
+                {MARKETPLACE_MODELS.has(formData.salesModel) && (
+                  <input
+                    type="text"
+                    name="secondaryMarketplaces"
+                    value={formData.secondaryMarketplaces}
+                    onChange={handleChange}
+                    disabled={isPendingConfirmation || isSubmitting}
+                    placeholder="¿En qué otros marketplaces vendes? (opcional)"
+                    className="mt-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    maxLength={250}
+                  />
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="monthlyRevenue" className="block [font-family:var(--font-dm-sans),sans-serif] font-bold text-[14px] leading-[130%] text-[#453A53] mb-1">
+                  Facturación mensual online aproximada <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="monthlyRevenue"
+                  name="monthlyRevenue"
+                  value={formData.monthlyRevenue}
+                  onChange={handleChange}
+                  disabled={isPendingConfirmation || isSubmitting}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  required
+                >
+                  <option value="" disabled>Selecciona una opción</option>
+                  <option value="over_100k">Más de US$100.000</option>
+                  <option value="50k_100k">US$50.000–100.000</option>
+                  <option value="10k_50k">US$10.000–50.000</option>
+                  <option value="under_10k">Menos de US$10.000</option>
+                  <option value="prefer_not_to_say">Prefiero no compartirlo</option>
+                  <option value="other">Otro</option>
+                </select>
+                {formData.monthlyRevenue === 'other' && (
+                  <input
+                    type="text"
+                    name="monthlyRevenueOther"
+                    value={formData.monthlyRevenueOther}
+                    onChange={handleChange}
+                    disabled={isPendingConfirmation || isSubmitting}
+                    placeholder="Cuéntanos cuál aplica"
+                    className="mt-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    maxLength={250}
+                    required
+                  />
+                )}
+              </div>
+
+              <div>
+                <label htmlFor="projectTiming" className="block [font-family:var(--font-dm-sans),sans-serif] font-bold text-[14px] leading-[130%] text-[#453A53] mb-1">
+                  Momento del proyecto <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="projectTiming"
+                  name="projectTiming"
+                  value={formData.projectTiming}
+                  onChange={handleChange}
+                  disabled={isPendingConfirmation || isSubmitting}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  required
+                >
+                  <option value="" disabled>Selecciona una opción</option>
+                  <option value="0_30_days">Quiero iniciar un proyecto en los próximos 30 días</option>
+                  <option value="1_3_months">Estoy preparando un proyecto para los próximos 1–3 meses</option>
+                  <option value="evaluating">Estoy evaluando opciones</option>
+                  <option value="researching">Solo estoy investigando</option>
+                  <option value="other">Otro</option>
+                </select>
+                {formData.projectTiming === 'other' && (
+                  <input
+                    type="text"
+                    name="projectTimingOther"
+                    value={formData.projectTimingOther}
+                    onChange={handleChange}
+                    disabled={isPendingConfirmation || isSubmitting}
+                    placeholder="Cuéntanos cuál aplica"
+                    className="mt-3 w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    maxLength={250}
+                    required
+                  />
+                )}
+              </div>
               
               <div>
                 <label htmlFor="message" className="block [font-family:var(--font-dm-sans),sans-serif] font-bold text-[14px] leading-[130%] text-[#453A53] mb-1">
-                  ¿Cómo podemos ayudarte? <span className="text-red-500">*</span>
+                  Cuéntanos brevemente qué quieres mejorar y qué esperas conseguir <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   id="message"
@@ -289,7 +465,8 @@ function ContactForm({ casosDeExito }: ContactPageClientProps) {
                   value={formData.message}
                   onChange={handleChange}
                   disabled={isPendingConfirmation || isSubmitting}
-                  placeholder="¡Por último! Cuéntanos ¿Qué quieres lograr?"
+                  placeholder="Por ejemplo: quiero vender directamente, mejorar conversión o migrar mi tienda"
+                  maxLength={1000}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   required
                 ></textarea>

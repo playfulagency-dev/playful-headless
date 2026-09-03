@@ -157,6 +157,31 @@ test('checkpoints contact, first touch, tag, Consulta opportunity and SLA task',
   assert.match(task.input.body, /\[playful-submission:submission-a\]/);
 });
 
+test('retains marketplace-transition contacts without creating an opportunity or SLA task', async () => {
+  const gateway = new GatewayMock();
+  const transitionLead = {
+    ...lead,
+    qualification: {
+      ...lead.qualification,
+      salesModel: 'mercado_libre' as const,
+    },
+  };
+
+  const result = await syncWebsiteLeadToHighLevel(transitionLead, gateway, config);
+
+  assert.deepEqual(result, { contactId: 'contact-1', opportunityCreated: false });
+  assert.deepEqual(gateway.calls.map((call) => call.operation), [
+    'upsert', 'get-fields', 'update-original', 'tag',
+  ]);
+  const upsert = gateway.calls[0].value as UpsertContactInput;
+  assert(upsert.customFields.some((item) => (
+    item.id === config.customFieldIds.sales_model && item.fieldValue === 'mercado_libre'
+  )));
+  assert(upsert.customFields.some((item) => (
+    item.id === config.customFieldIds.qualification_level && item.fieldValue === 'transition'
+  )));
+});
+
 test('fills only blank original attribution fields for existing contacts', async () => {
   const gateway = new GatewayMock();
   gateway.contact = { id: 'contact-1', isNew: false };

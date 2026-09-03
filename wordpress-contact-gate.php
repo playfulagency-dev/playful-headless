@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Playful Contact Gate
  * Description: Protege el endpoint de contacto de Playful y evita entregas duplicadas.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Playful Agency
  */
 
@@ -78,6 +78,48 @@ function playful_contact_gate_submission_id($request) {
     }
 
     return $submission_id;
+}
+
+function playful_contact_gate_allowed_qualification_values() {
+    return array(
+        'decisionRole' => array('owner', 'decision_lead', 'researching_for_other', 'other'),
+        'salesModel' => array('d2c', 'd2c_b2b', 'amazon', 'mercado_libre', 'marketplaces_other', 'marketplace_to_d2c', 'pre_d2c', 'not_online_or_unsure', 'other'),
+        'monthlyRevenue' => array('over_100k', '50k_100k', '10k_50k', 'under_10k', 'prefer_not_to_say', 'other'),
+        'projectTiming' => array('0_30_days', '1_3_months', 'evaluating', 'researching', 'other'),
+    );
+}
+
+function playful_contact_gate_validate_qualification($request) {
+    $qualification = $request->get_param('qualification');
+    // Existing integrations retain their current contract until Next.js sends
+    // the versioned qualification object. New submissions fail closed.
+    if ($qualification === null) {
+        return true;
+    }
+    if (!is_array($qualification)) {
+        return new WP_Error('playful_contact_gate_invalid_qualification', 'Invalid qualification payload.', array('status' => 422));
+    }
+
+    foreach (playful_contact_gate_allowed_qualification_values() as $field => $allowed) {
+        $value = isset($qualification[$field]) ? (string) $qualification[$field] : '';
+        if (!in_array($value, $allowed, true)) {
+            return new WP_Error('playful_contact_gate_invalid_qualification', 'Invalid qualification selection.', array('status' => 422));
+        }
+        $other_field = $field . 'Other';
+        $other = isset($qualification[$other_field]) ? trim((string) $qualification[$other_field]) : '';
+        if ($value === 'other' && ($other === '' || strlen($other) > 250)) {
+            return new WP_Error('playful_contact_gate_invalid_qualification', 'Qualification clarification is required.', array('status' => 422));
+        }
+    }
+
+    $marketplaces = isset($qualification['secondaryMarketplaces'])
+        ? (string) $qualification['secondaryMarketplaces']
+        : '';
+    if (strlen($marketplaces) > 250) {
+        return new WP_Error('playful_contact_gate_invalid_qualification', 'Qualification detail is too long.', array('status' => 422));
+    }
+
+    return true;
 }
 
 function playful_contact_gate_request_context($request, $context = null, $remove = false) {
@@ -304,6 +346,11 @@ add_filter('rest_pre_dispatch', function ($result, $server, $request) {
 
     if ($result !== null) {
         return $result;
+    }
+
+    $qualification = playful_contact_gate_validate_qualification($request);
+    if (is_wp_error($qualification)) {
+        return $qualification;
     }
 
     $submission_id = playful_contact_gate_submission_id($request);

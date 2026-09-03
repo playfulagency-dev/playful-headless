@@ -13,6 +13,10 @@ test('normalizes identity and bounds attribution to a relative landing', () => {
     phone: '+34 (911) 111-111',
     business: ' Analytical Engines ',
     message: ' Necesitamos una tienda. ',
+    decisionRole: 'owner',
+    salesModel: 'd2c',
+    monthlyRevenue: 'over_100k',
+    projectTiming: '0_30_days',
     privacyConsent: true,
     marketingConsent: false,
     originalAttribution: {
@@ -29,6 +33,25 @@ test('normalizes identity and bounds attribution to a relative landing', () => {
   assert.equal(result.originalAttribution.landing, '/contacto?utm_source=google');
   assert.equal(result.originalAttribution.formId, 'website-contact');
   assert.equal(result.consentCapturedAt, '2026-08-30T12:00:00.000Z');
+  assert.equal(result.qualification.salesModel, 'd2c');
+});
+
+test('requires a clarification only when Otro is selected', () => {
+  const base = {
+    submissionId: '00000000-0000-4000-8000-000000000000',
+    name: 'Ada',
+    email: 'ada@example.com',
+    message: 'Hola',
+    privacyConsent: true,
+    decisionRole: 'other',
+    salesModel: 'marketplace_to_d2c',
+    monthlyRevenue: 'over_100k',
+    projectTiming: '0_30_days',
+  };
+
+  assert.throws(() => normalizeWebsiteLead(base), SubmissionValidationError);
+  const result = normalizeWebsiteLead({ ...base, decisionRoleOther: 'Socia operativa' });
+  assert.equal(result.qualification.decisionRoleOther, 'Socia operativa');
 });
 
 test('rejects a submission without explicit privacy consent', () => {
@@ -40,4 +63,3 @@ test('rejects a submission without explicit privacy consent', () => {
     privacyConsent: false,
   }), SubmissionValidationError);
 });
-

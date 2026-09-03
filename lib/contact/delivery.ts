@@ -199,6 +199,7 @@ export async function deliverToWordPress(
           phone: lead.phone,
           business: lead.business,
           message: lead.message,
+          qualification: lead.qualification,
         }),
         signal: AbortSignal.timeout(WORDPRESS_DELIVERY_TIMEOUT_MS),
       });

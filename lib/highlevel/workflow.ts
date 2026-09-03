@@ -21,9 +21,28 @@ export class AmbiguousOpportunityError extends Error {
 
 export interface CrmSyncResult {
   contactId: string;
-  opportunityId: string;
-  opportunityCreated: boolean;
-  taskId: string;
+  opportunityId?: string;
+  opportunityCreated?: boolean;
+  taskId?: string;
+}
+
+type QualificationLevel = 'priority' | 'transition' | 'review';
+
+function qualificationLevel(lead: WebsiteLead): QualificationLevel {
+  const qualification = lead.qualification;
+  const isDecisionMaker = qualification.decisionRole === 'owner'
+    || qualification.decisionRole === 'decision_lead';
+  const isNearTerm = qualification.projectTiming === '0_30_days'
+    || qualification.projectTiming === '1_3_months';
+  const isDirectCommerce = qualification.salesModel === 'd2c'
+    || qualification.salesModel === 'd2c_b2b'
+    || qualification.salesModel === 'marketplace_to_d2c';
+
+  if (isDecisionMaker && isNearTerm && isDirectCommerce
+    && qualification.monthlyRevenue === 'over_100k') return 'priority';
+  if (['amazon', 'mercado_libre', 'marketplaces_other', 'marketplace_to_d2c', 'pre_d2c']
+    .includes(qualification.salesModel)) return 'transition';
+  return 'review';
 }
 
 function field(
@@ -47,6 +66,17 @@ function recentFields(lead: WebsiteLead, config: EnabledHighLevelConfig): HighLe
     field(config, 'form_id', attribution.formId),
     field(config, 'privacy_consent_at', lead.consentCapturedAt),
     field(config, 'marketing_consent', lead.marketingConsent),
+    field(config, 'decision_role', lead.qualification.decisionRole),
+    field(config, 'decision_role_other', lead.qualification.decisionRoleOther),
+    field(config, 'sales_model', lead.qualification.salesModel),
+    field(config, 'sales_model_other', lead.qualification.salesModelOther),
+    field(config, 'secondary_marketplaces', lead.qualification.secondaryMarketplaces),
+    field(config, 'monthly_revenue', lead.qualification.monthlyRevenue),
+    field(config, 'monthly_revenue_other', lead.qualification.monthlyRevenueOther),
+    field(config, 'project_timing', lead.qualification.projectTiming),
+    field(config, 'project_timing_other', lead.qualification.projectTimingOther),
+    field(config, 'qualification_level', qualificationLevel(lead)),
+    field(config, 'project_context', lead.message),
   ];
 }
 
@@ -89,6 +119,7 @@ export async function syncWebsiteLeadToHighLevel(
   suppliedControl?: CrmSyncControl,
 ): Promise<CrmSyncResult> {
   const control = suppliedControl || localControl(lead);
+  const fit = qualificationLevel(lead);
   let contactId = control.progress.contactId;
 
   if (!contactId) {
@@ -135,8 +166,16 @@ export async function syncWebsiteLeadToHighLevel(
   }
 
   if (!control.progress.tagsCompleted) {
-    await gateway.addContactTags(contactId, [config.contactTag]);
+    await gateway.addContactTags(contactId, [
+      config.contactTag,
+      `fit:${fit}`,
+      `model:${lead.qualification.salesModel}`,
+    ]);
     await control.checkpoint({ tagsCompleted: true });
+  }
+
+  if (fit !== 'priority') {
+    return { contactId, opportunityCreated: false };
   }
 
   let opportunityId = control.progress.opportunityId;

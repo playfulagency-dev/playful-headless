@@ -1,7 +1,16 @@
 import {
   ATTRIBUTION_FIELDS,
   CONTACT_FORM_ID,
+  DECISION_ROLE_OPTIONS,
+  MONTHLY_REVENUE_OPTIONS,
+  PROJECT_TIMING_OPTIONS,
+  SALES_MODEL_OPTIONS,
   type ContactAttribution,
+  type DecisionRole,
+  type LeadQualification,
+  type MonthlyRevenue,
+  type ProjectTiming,
+  type SalesModel,
   type WebsiteLead,
 } from './types.ts';
 
@@ -23,6 +32,63 @@ function requiredText(value: unknown, field: string, maxLength: number): string 
     throw new SubmissionValidationError(`Falta el campo requerido: ${field}.`);
   }
   return normalized;
+}
+
+function option<T extends string>(
+  value: unknown,
+  field: string,
+  allowed: readonly T[],
+): T {
+  const normalized = requiredText(value, field, 80);
+  if (!(allowed as readonly string[]).includes(normalized)) {
+    throw new SubmissionValidationError(`El campo ${field} no contiene una opción válida.`);
+  }
+  return normalized as T;
+}
+
+function otherText(value: unknown, field: string, selected: string): string {
+  const normalized = text(value, 250);
+  if (selected === 'other' && !normalized) {
+    throw new SubmissionValidationError(`Aclara el campo requerido: ${field}.`);
+  }
+  return selected === 'other' ? normalized : '';
+}
+
+function qualification(value: Record<string, unknown>): LeadQualification {
+  const decisionRole = option<DecisionRole>(
+    value.decisionRole,
+    'decisionRole',
+    DECISION_ROLE_OPTIONS,
+  );
+  const salesModel = option<SalesModel>(
+    value.salesModel,
+    'salesModel',
+    SALES_MODEL_OPTIONS,
+  );
+  const monthlyRevenue = option<MonthlyRevenue>(
+    value.monthlyRevenue,
+    'monthlyRevenue',
+    MONTHLY_REVENUE_OPTIONS,
+  );
+  const projectTiming = option<ProjectTiming>(
+    value.projectTiming,
+    'projectTiming',
+    PROJECT_TIMING_OPTIONS,
+  );
+  const usesMarketplace = ['amazon', 'mercado_libre', 'marketplaces_other', 'marketplace_to_d2c']
+    .includes(salesModel);
+
+  return {
+    decisionRole,
+    decisionRoleOther: otherText(value.decisionRoleOther, 'decisionRoleOther', decisionRole),
+    salesModel,
+    salesModelOther: otherText(value.salesModelOther, 'salesModelOther', salesModel),
+    secondaryMarketplaces: usesMarketplace ? text(value.secondaryMarketplaces, 250) : '',
+    monthlyRevenue,
+    monthlyRevenueOther: otherText(value.monthlyRevenueOther, 'monthlyRevenueOther', monthlyRevenue),
+    projectTiming,
+    projectTimingOther: otherText(value.projectTimingOther, 'projectTimingOther', projectTiming),
+  };
 }
 
 function normalizeEmail(value: unknown): string {
@@ -105,7 +171,8 @@ export function normalizeWebsiteLead(value: unknown, now = new Date()): WebsiteL
     email: normalizeEmail(input.email),
     phone: normalizePhone(input.phone),
     business: text(input.business, 160),
-    message: requiredText(input.message, 'message', 5000),
+    message: requiredText(input.message, 'message', 1000),
+    qualification: qualification(input),
     privacyConsent: true,
     marketingConsent: input.marketingConsent === true,
     consentCapturedAt: now.toISOString(),
@@ -113,4 +180,3 @@ export function normalizeWebsiteLead(value: unknown, now = new Date()): WebsiteL
     recentAttribution: normalizeAttribution(input.recentAttribution),
   };
 }
-

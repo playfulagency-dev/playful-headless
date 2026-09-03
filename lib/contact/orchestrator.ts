@@ -62,6 +62,7 @@ export function submissionFingerprint(lead: WebsiteLead): string {
     phone: lead.phone,
     business: lead.business,
     message: lead.message,
+    qualification: lead.qualification,
     privacyConsent: lead.privacyConsent,
     marketingConsent: lead.marketingConsent,
     originalAttribution: lead.originalAttribution,

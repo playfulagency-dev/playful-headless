@@ -59,7 +59,9 @@ test('sends a stable submission receipt key to WordPress', async () => {
 
     const headers = new Headers(request?.headers);
     assert.equal(headers.get('X-Playful-Submission-Id'), lead.submissionId);
-    assert.equal(JSON.parse(String(request?.body)).submission_id, lead.submissionId);
+    const body = JSON.parse(String(request?.body));
+    assert.equal(body.submission_id, lead.submissionId);
+    assert.deepEqual(body.qualification, lead.qualification);
   } finally {
     restore();
   }
