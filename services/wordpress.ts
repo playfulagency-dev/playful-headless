@@ -3,7 +3,10 @@ import {
   isAllowedCaseStudyMediaUrl,
   preserveFeaturedMediaUrl,
 } from './case-study-media-policy.mjs';
+import { rewriteInSitePageHrefs } from './rewrite-in-site-hrefs.mjs';
 import { wordpressFetch, wordpressFetchCollection } from './wordpress-request.mjs';
+
+export { rewriteInSitePageHrefs };
 
 const WORDPRESS_API_URL = 'https://endpoint.playfulagency.com/wp-json';
 
@@ -298,15 +301,6 @@ export interface WPPage {
   stylesheetIds: number[];
 }
 
-const IN_SITE_PAGE_HOSTS = new Set([
-  'endpoint.playfulagency.com',
-  'old.playfulagency.com',
-  'playfulagency.com',
-  'www.playfulagency.com',
-]);
-
-const WP_ASSET_PATH_PREFIXES = ['/wp-content', '/wp-includes', '/wp-json', '/wp-admin'];
-
 function stripHtml(html: string): string {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, '')
@@ -335,32 +329,6 @@ function collectStylesheetIds(html: string, pageId: number): number[] {
     if (!Number.isNaN(id)) ids.add(id);
   }
   return Array.from(ids);
-}
-
-function rewritePageHref(url: string): string {
-  const trimmed = url.trim();
-  const parsed = trimmed.match(/^(https?:)?\/\/([^/]+)(\/[^?#]*)?(\?[^#]*)?(#.*)?$/i);
-  if (!parsed) return url;
-
-  const host = parsed[2].toLowerCase();
-  if (!IN_SITE_PAGE_HOSTS.has(host)) return url;
-
-  const path = parsed[3] || '/';
-  if (WP_ASSET_PATH_PREFIXES.some((prefix) => path === prefix || path.startsWith(`${prefix}/`))) {
-    return url;
-  }
-
-  const query = parsed[4] || '';
-  const hash = parsed[5] || '';
-  const normalized = path === '/' ? '/' : path.replace(/\/+$/, '');
-  return `${normalized}${query}${hash}`;
-}
-
-/** Rewrites in-site page hrefs to relative Next paths; leaves wp-content/assets untouched. */
-function rewriteInSitePageHrefs(html: string): string {
-  return html.replace(/href=(["'])([^"']+)\1/gi, (_full, quote: string, href: string) => {
-    return `href=${quote}${rewritePageHref(href)}${quote}`;
-  });
 }
 
 /** Página WP (servicios, etc.) con HTML de Elementor para renderizarla en el Next. */
@@ -548,6 +516,12 @@ export async function getBlogPostBySlug(slug: string): Promise<WPPost | null> {
       post.tags = terms[1] || [];
     }
     if (post._embedded['author'] && post._embedded['author'][0]) post.author = post._embedded['author'][0];
+  }
+  if (post.content?.rendered) {
+    post.content = {
+      ...post.content,
+      rendered: rewriteInSitePageHrefs(post.content.rendered),
+    };
   }
   return post;
 }
