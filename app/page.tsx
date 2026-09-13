@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getHomePageMetadata } from '@/services/wordpress';
 import { canonicalForPath } from '@/utils/canonical';
+import { ORGANIZATION_JSON_LD } from '@/utils/organization-schema.mjs';
 
 const HOME_CANONICAL = canonicalForPath('/');
 
@@ -188,6 +189,11 @@ export default function Home() {
     <>
       <link rel="canonical" href={HOME_CANONICAL} />
       <meta property="og:url" content={HOME_CANONICAL} />
+      <script
+        id="playful-organization"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: ORGANIZATION_JSON_LD }}
+      />
       <h1 className="sr-only">
         ¿Tu e-commerce está perdiendo dinero sin que lo sepas?{" "}
       </h1>
