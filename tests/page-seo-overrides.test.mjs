@@ -4,10 +4,32 @@ import assert from 'node:assert/strict';
 import {
   PAGE_TITLE_OVERRIDES,
   applyPageTitleOverride,
+  PAGE_DESCRIPTION_OVERRIDES,
+  applyPageDescriptionOverride,
 } from '../utils/page-seo-overrides.mjs';
 
 const MARKETING_TITLE =
   'Marketing Internacional: Lleva tu negocio al mundo (sin complicaciones)';
+
+test('ecommerce overrides both cloned descriptions with matching service metadata', () => {
+  assert.deepEqual(Object.keys(PAGE_DESCRIPTION_OVERRIDES), ['agencia-e-commerce']);
+  const result = applyPageDescriptionOverride('agencia-e-commerce', MARKETING_TITLE, MARKETING_TITLE);
+  assert.equal(result.description, PAGE_DESCRIPTION_OVERRIDES['agencia-e-commerce']);
+  assert.equal(result.ogDescription, result.description);
+  assert.doesNotMatch(result.description, /Marketing Internacional/i);
+  assert.match(result.description, /tiendas online/);
+});
+
+test('description overrides preserve other slugs and original Open Graph fallback', () => {
+  for (const slug of ['marketing-internacional', 'agencia-seo', 'agencia-sem', 'constructor', '__proto__']) {
+    assert.deepEqual(applyPageDescriptionOverride(slug, 'Original', 'Social'), {
+      description: 'Original', ogDescription: 'Social',
+    });
+    assert.deepEqual(applyPageDescriptionOverride(slug, 'Original', ''), {
+      description: 'Original', ogDescription: 'Original',
+    });
+  }
+});
 const SHARED_PAGOS_TITLE =
   'Pagos Online para E-commerce | Haz tu Integración con Playful Agency';
 

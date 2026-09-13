@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { canonicalForPath } from '@/utils/canonical';
 import { getPageBySlug, getPageMetadataBySlug } from '@/services/wordpress';
-import { applyPageTitleOverride } from '@/utils/page-seo-overrides.mjs';
+import { applyPageTitleOverride, applyPageDescriptionOverride } from '@/utils/page-seo-overrides.mjs';
 import ElementorPageContent from '@/components/ElementorPageContent';
 
 export const revalidate = 300;
@@ -32,14 +32,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     metadata.yoast_wpseo_title,
     metadata.yoast_wpseo_og_title,
   );
+  const { description, ogDescription } = applyPageDescriptionOverride(
+    slug,
+    metadata.yoast_wpseo_metadesc,
+    metadata.yoast_wpseo_og_description,
+  );
   return {
     title,
-    description: metadata.yoast_wpseo_metadesc,
+    description,
     alternates: { canonical: url },
     ...(slug === 'gracias' ? { robots: { index: false, follow: true } } : {}),
     openGraph: {
       title: ogTitle,
-      description: metadata.yoast_wpseo_og_description || metadata.yoast_wpseo_metadesc,
+      description: ogDescription,
       url,
       images: metadata.yoast_wpseo_og_image ? [metadata.yoast_wpseo_og_image] : undefined,
     },
