@@ -17,6 +17,12 @@ El componente renderiza los casos suministrados en servidor. Conserva los datos,
 
 ## Pendiente antes de cierre
 
-Comparación visual automatizada contra la versión base, checks del PR y validación del artefacto desplegable. La inspección del DOM no sustituye la comparación visual; no se ha acreditado todavía ausencia de errores de consola. No se publicó producción ni se enviaron formularios.
+Checks del PR y validación del artefacto desplegable. No se ha acreditado todavía ausencia de errores de consola. No se publicó producción ni se enviaron formularios.
+
+## Revisión independiente y comparación contra base
+
+El revisor independiente no identificó regresiones críticas: 5/5 pruebas SSR y 19/19 pruebas relacionadas con Shopify, enlaces y política de imágenes. Base e9ccb5f ejecutada separadamente en 3095; candidato b916798 en 3094.
+
+Comparación automatizada del DOM renderizado y sus medidas: igualdad de ambos títulos, enlaces, imágenes y dimensiones. En escritorio de 1280 px: tarjetas 326 × 500 e imágenes de 192 px de alto. En móvil de 390 px: slides 273 × 500, imágenes de 192 px; fuente de titulares 20 px y color rgb(17,24,39) iguales. Inspección de capturas del candidato escritorio y de ambos móviles sin diferencias del diseño de tarjetas observadas. No es una comparación pixel-perfect. El chat flotante existente tapa parte de la tarjeta en ambas versiones móviles; no fue introducido por este parche.
 
 Rollback: revert del commit del componente y sus pruebas; sin migraciones ni cambios de datos.
