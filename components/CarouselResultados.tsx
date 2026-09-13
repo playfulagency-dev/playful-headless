@@ -1,16 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import dynamic from "next/dynamic";
+import React, { useState, useEffect } from "react";
+import Slider from "react-slick";
 import Link from "next/link";
 import { useSliderSettings } from "../hooks/useSliderSettings";
 import { selectCaseStudyCardMediaUrl } from "../services/case-study-media-policy.mjs";
-
-// Importación dinámica del Slider para asegurar que solo se cargue en el cliente
-const Slider = dynamic(() => import("react-slick").then((mod) => mod.default), {
-  ssr: false,
-  loading: () => <div>Cargando...</div>,
-});
 
 // Importar estilos de slick
 import "slick-carousel/slick/slick.css";
@@ -126,19 +120,78 @@ interface CarouselResultadosProps {
   actionButtonColor?: string;
 }
 
+function transformCaseStudies(data: WPCaseStudy[]): CaseStudy[] {
+  return data.map((item) => {
+    // Extraer título
+    const title = item.title?.rendered || 'Sin título';
+
+    // Extraer descripción y limpiar HTML
+    let description = '';
+    if (item.excerpt?.rendered) {
+      description = item.excerpt.rendered
+        .replace(/<[^>]*>?/gm, '') // Eliminar etiquetas HTML
+        .replace(/\[\/?(p|br|strong|em|h[1-6])\]/g, '') // Eliminar etiquetas cortas restantes
+        .replace(/&nbsp;/g, ' ') // Reemplazar espacios no separables
+        .replace(/&amp;/g, '&') // Decodificar entidades HTML
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .trim();
+    }
+
+    // Si no hay descripción del excerpt, usar el contenido del post
+    if (!description && item.content?.rendered) {
+      description = item.content.rendered
+        .replace(/<[^>]*>?/gm, '')
+        .replace(/\[\/?(p|br|strong|em|h[1-6])\]/g, '')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .trim();
+    }
+
+    // Si aún no hay descripción, usar una por defecto
+    if (!description) {
+      description = 'Descubre cómo este proyecto transformó los resultados de nuestro cliente con estrategias innovadoras y soluciones personalizadas.';
+    }
+
+    // Extraer imagen destacada
+    const image = selectCaseStudyCardMediaUrl(item);
+
+    // Construir array de categorías
+    const categories: string[] = [];
+    if (item.acf?.tags) {
+      categories.push(...item.acf.tags);
+    }
+    // Agregar categorías adicionales si existen
+    for (let i = 1; i <= 5; i++) {
+      const categoria = item.acf?.[`categoria${i}` as keyof typeof item.acf] as string;
+      if (categoria) {
+        categories.push(categoria);
+      }
+    }
+
+    return {
+      id: item.id,
+      title,
+      slug: item.slug,
+      description,
+      categories,
+      badge: item.acf?.badge || '',
+      badgeColor: item.acf?.badge_color || 'bg-purple-600',
+      buttonText: item.acf?.button_text || 'Ver más',
+      buttonColor: item.acf?.button_color || 'bg-blue-600',
+      image,
+    };
+  });
+}
+
 // Componente para la tarjeta de caso de estudio (mismo patrón que home)
 export const CaseStudyCard = ({ caseStudy }: { caseStudy: CaseStudy }) => {
   const [imageError, setImageError] = useState(false);
-  const [imageLoaded, setImageLoaded] = useState(false);
-  const imageRef = useRef<HTMLImageElement>(null);
   const hasImage = caseStudy.image && !imageError;
-
-  useEffect(() => {
-    const image = imageRef.current;
-    if (image?.complete && image.naturalWidth > 0) {
-      setImageLoaded(true);
-    }
-  }, [caseStudy.image]);
 
   return (
     <div className="px-2 h-full">
@@ -148,13 +201,9 @@ export const CaseStudyCard = ({ caseStudy }: { caseStudy: CaseStudy }) => {
           <div className="relative h-48 bg-gray-200 overflow-hidden group flex-shrink-0">
             {hasImage ? (
               <img
-                ref={imageRef}
                 src={caseStudy.image}
                 alt={caseStudy.title}
-                className={`w-full h-full object-cover transition-opacity duration-300 ${
-                  imageLoaded ? 'opacity-100' : 'opacity-0'
-                }`}
-                onLoad={() => setImageLoaded(true)}
+                className="w-full h-full object-cover"
                 onError={() => setImageError(true)}
               />
             ) : (
@@ -238,109 +287,37 @@ const CarouselResultados: React.FC<CarouselResultadosProps> = ({
   badgeColor = "#7C3AED",
   actionButtonColor = "#2563EB",
 }) => {
-  const [caseStudies, setCaseStudies] = useState<CaseStudy[]>([]);
+  // Read supplied cards on every render, including SSR and subsequent prop updates.
+  const suppliedCases = cases.length > 0 ? cases :
+    casosDeExito.length > 0 ? transformCaseStudies(casosDeExito) : null;
+  const hasSuppliedCases = suppliedCases !== null;
+  const [fetchedCases, setFetchedCases] = useState<CaseStudy[]>([]);
+  const caseStudies = suppliedCases ?? fetchedCases;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const responsiveSettings = useSliderSettings();
 
   useEffect(() => {
+    if (hasSuppliedCases) return;
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
     const fetchCaseStudies = async () => {
       try {
-        let data = casosDeExito;
-        
-        // Solo hacer fetch si no se pasaron datos
-        if (data.length === 0 && cases.length === 0) {
-          const { getAllCaseStudies } = await import('@/services/wordpress');
-          data = await getAllCaseStudies();
-        } else if (cases.length > 0) {
-          // Si se pasaron casos ya transformados, usarlos directamente
-          setCaseStudies(cases);
-          setLoading(false);
-          return;
-        } else if (data.length === 0) {
-          // Si no hay datos, no hacer nada
-          setLoading(false);
-          return;
-        }
-        
-        // Transformar los datos de la API al formato esperado por el componente
-        const transformedData: CaseStudy[] = data.map((item: WPCaseStudy) => {
-          // Extraer título
-          const title = item.title?.rendered || 'Sin título';
-          
-          // Extraer descripción y limpiar HTML
-          let description = '';
-          if (item.excerpt?.rendered) {
-            description = item.excerpt.rendered
-              .replace(/<[^>]*>?/gm, '') // Eliminar etiquetas HTML
-              .replace(/\[\/?(p|br|strong|em|h[1-6])\]/g, '') // Eliminar etiquetas cortas restantes
-              .replace(/&nbsp;/g, ' ') // Reemplazar espacios no separables
-              .replace(/&amp;/g, '&') // Decodificar entidades HTML
-              .replace(/&lt;/g, '<')
-              .replace(/&gt;/g, '>')
-              .replace(/&quot;/g, '"')
-              .trim();
-          }
-          
-          // Si no hay descripción del excerpt, usar el contenido del post
-          if (!description && item.content?.rendered) {
-            description = item.content.rendered
-              .replace(/<[^>]*>?/gm, '')
-              .replace(/\[\/?(p|br|strong|em|h[1-6])\]/g, '')
-              .replace(/&nbsp;/g, ' ')
-              .replace(/&amp;/g, '&')
-              .replace(/&lt;/g, '<')
-              .replace(/&gt;/g, '>')
-              .replace(/&quot;/g, '"')
-              .trim();
-          }
-          
-          // Si aún no hay descripción, usar una por defecto
-          if (!description) {
-            description = 'Descubre cómo este proyecto transformó los resultados de nuestro cliente con estrategias innovadoras y soluciones personalizadas.';
-          }
-
-          // Extraer imagen destacada
-          const image = selectCaseStudyCardMediaUrl(item);
-
-          // Construir array de categorías
-          const categories: string[] = [];
-          if (item.acf?.tags) {
-            categories.push(...item.acf.tags);
-          }
-          // Agregar categorías adicionales si existen
-          for (let i = 1; i <= 5; i++) {
-            const categoria = item.acf?.[`categoria${i}` as keyof typeof item.acf] as string;
-            if (categoria) {
-              categories.push(categoria);
-            }
-          }
-
-          return {
-            id: item.id,
-            title,
-            slug: item.slug,
-            description,
-            categories,
-            badge: item.acf?.badge || '',
-            badgeColor: item.acf?.badge_color || 'bg-purple-600',
-            buttonText: item.acf?.button_text || 'Ver más',
-            buttonColor: item.acf?.button_color || 'bg-blue-600',
-            image,
-          };
-        });
-
-        setCaseStudies(transformedData);
+        const { getAllCaseStudies } = await import('@/services/wordpress');
+        const data = await getAllCaseStudies();
+        if (!cancelled) setFetchedCases(transformCaseStudies(data));
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error desconocido');
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Error desconocido');
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
-    // Solo ejecutar una vez al montar el componente
     fetchCaseStudies();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    return () => { cancelled = true; };
+  }, [hasSuppliedCases]);
 
   return (
     <>
@@ -370,12 +347,12 @@ const CarouselResultados: React.FC<CarouselResultadosProps> = ({
 
         {/* Contenedor del carousel */}
         <div className="carousel-container overflow-hidden">
-          {loading ? (
+          {!hasSuppliedCases && loading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
               <p className="mt-4" style={{ color: textColor }}>Cargando casos de éxito...</p>
             </div>
-          ) : error ? (
+          ) : !hasSuppliedCases && error ? (
             <div className="text-center py-12">
               <p className="text-red-300 mb-4">{error}</p>
               <button 
