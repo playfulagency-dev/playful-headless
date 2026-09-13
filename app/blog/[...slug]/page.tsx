@@ -105,10 +105,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         <a href={serviceCta.href}>{serviceCta.label}</a>
       </p>
     ) : null}
-    <BlogPostContent 
-      title={post.title.rendered}
-      featuredImage={post.featured_media_url}
-    >
+    <BlogPostContent>
       <div className="min-h-screen">
       {/* Header con título e imagen */}
       <header className="pt-4 pb-12">
