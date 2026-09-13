@@ -1,6 +1,6 @@
 # Blog client payload — 2026-09-13
 
-Approved card: `aprobada86cbh2p35`. Baseline code: `e9ccb5f`.
+Approved card: [86cbh2p35](https://app.clickup.com/t/86cbh2p35). Baseline code: `e9ccb5f`.
 
 `app/blog/page.tsx` previously passed complete WordPress posts to the client
 component `MostViewedArticles`. That component consumes only identifiers, dates,
@@ -81,3 +81,14 @@ and `results.json`). The isolated build is under
 `/var/folders/w_/pdfn_d7d1m7ft7b_p8jfh57r0000gn/T/playful-blog-profile-kdgea1`.
 These captures are not committed. No push, deployment, form submission or
 integration change was performed.
+
+## Independent coordinator review
+
+Reviewed the full patch, fixture construction, URL mapping and all callers of
+MostViewedArticles (only the blog index). Re-ran the three projection tests,
+repository TypeScript check and all seven GET comparisons against the built
+fixture: identical results, including 461,841 → 64,483 bytes for the listing.
+No critical regression identified. Controls/state logic and styles are unchanged.
+Evidence: `/private/tmp/playful-blog-independent-evidence/results.json`.
+This review does not replace PR checks, deployed-artifact verification or the
+post-publication measurement; no production performance claim is made.
