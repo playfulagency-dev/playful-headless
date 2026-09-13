@@ -11,6 +11,7 @@ import MostViewedArticles from '@/components/blog/MostViewedArticles';
 import TwoColumnCtaSection from '@/components/ui/TwoColumnCtaSection';
 import { filterOpenBlogPosts } from '@/utils/blog-closed-paths';
 import { blogPostPath } from '@/utils/blog-url';
+import { toBlogPreview } from '@/utils/blog-preview';
 
 // Función para formatear la fecha
 const formatDate = (dateString: string) => {
@@ -202,7 +203,7 @@ export default async function BlogPage({
       )}
 
       {/* Artículos Más Vistos */}
-      <MostViewedArticles posts={posts} />
+      <MostViewedArticles posts={posts.map(toBlogPreview)} />
 
       {/* Barra de categorías */}
       <div className="w-full pb-8">

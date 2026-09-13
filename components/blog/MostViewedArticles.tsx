@@ -3,11 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { WPPost } from '@/services/wordpress';
-import { blogPostPath } from '@/utils/blog-url';
+import type { BlogPreview } from '@/utils/blog-preview';
 
 interface MostViewedArticlesProps {
-  posts: WPPost[];
+  posts: BlogPreview[];
 }
 
 export default function MostViewedArticles({ posts }: MostViewedArticlesProps) {
@@ -76,7 +75,7 @@ export default function MostViewedArticles({ posts }: MostViewedArticlesProps) {
                 {post.featured_media_url ? (
                   <Image
                     src={post.featured_media_url}
-                    alt={post.featured_media_alt || post.title.rendered}
+                    alt={post.featured_media_alt || post.title}
                     fill
                     className="object-contain p-4"
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -96,11 +95,11 @@ export default function MostViewedArticles({ posts }: MostViewedArticlesProps) {
                 <span className="text-xs font-bold text-[#440099] uppercase mb-3">MÁS VISTOS</span>
                 
                 <Link 
-                  href={blogPostPath(post)}
+                  href={post.href}
                   className="block mb-3"
                 >
                   <h3 className="text-lg font-bold text-[#440099] line-clamp-2 leading-tight hover:text-[#5500BB] transition-colors">
-                    {post.title.rendered}
+                    {post.title}
                   </h3>
                 </Link>
                 
@@ -109,7 +108,7 @@ export default function MostViewedArticles({ posts }: MostViewedArticlesProps) {
                 </p>
                 
                 <Link 
-                  href={blogPostPath(post)}
+                  href={post.href}
                   className="mt-auto w-full bg-[#440099] text-white py-3 rounded-full font-bold text-sm text-center hover:bg-[#5500BB] transition-all"
                 >
                   LEER MÁS

@@ -21,6 +21,7 @@
     "smoke:service-booking": "node --experimental-strip-types scripts/service-booking-cta-curl.mjs",
     "smoke:about-hrefs": "node --experimental-strip-types scripts/about-href-curl.mjs",
     "test:wordpress": "node --test tests/wordpress-*.test.mjs tests/page-seo-overrides.test.mjs",
+    "test:blog-payload": "node --experimental-strip-types --test tests/blog-preview.test.mjs",
     "test:highlevel": "node --experimental-transform-types --test tests/highlevel/*.test.ts",
     "test:highlevel-evidence": "node --test tests/highlevel/redacted-export-audit.test.mjs",
     "audit:highlevel-export": "node scripts/highlevel-redacted-export-audit.mjs",
